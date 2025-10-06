@@ -1,0 +1,29 @@
+{
+    "name": "Aashvi Automotive",
+    "short_name": "AashviAuto",
+    "description": "Trusted multibrand 2-wheeler workshop in Rajnagar, Madhubani. Book bike service, repairs & detailing online.",
+    "lang": "en-IN",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0B3B74",
+    "theme_color": "#FF7A18",
+    "icons": [
+      {
+        "src": "/favicon.ico",
+        "sizes": "64x64 32x32 24x24 16x16",
+        "type": "image/x-icon"
+      },
+      {
+        "src": "/apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      },
+      {
+        "src": "/web-app-manifest-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }  

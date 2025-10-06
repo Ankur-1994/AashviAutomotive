@@ -1,0 +1,10 @@
+# Allow all search engines
+User-agent: *
+Allow: /
+
+# Disallow private or admin paths (optional)
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://aashviautomotive.in/sitemap.xml

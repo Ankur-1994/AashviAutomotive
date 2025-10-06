@@ -1,0 +1,137 @@
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../services/firebase";
+import { Helmet } from "react-helmet";
+import { motion, AnimatePresence } from "framer-motion";
+import ServicesSection from "../components/ServicesSection";
+import PromoBanner from "../components/PromoBanner";
+import AboutSection from "../components/AboutSection";
+import TestimonialsSection from "../components/TestimonialsSection";
+import ContactSection from "../components/ContactSection";
+
+interface Slide {
+  image: string;
+  title_en: string;
+  title_hi: string;
+  desc_en: string;
+  desc_hi: string;
+  cta_text: string;
+}
+
+interface HomeProps {
+  language: "en" | "hi";
+}
+
+const Home = ({ language }: HomeProps) => {
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [current, setCurrent] = useState(0);
+
+  // Fetch hero slides from Firestore
+  useEffect(() => {
+    const fetchSlides = async () => {
+      const docRef = doc(db, "content", "home_hero");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) setSlides(docSnap.data().slides as Slide[]);
+    };
+    fetchSlides();
+  }, []);
+
+  // Carousel auto-slide every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(
+      () => setCurrent((prev) => (prev + 1) % slides.length),
+      5000
+    );
+    return () => clearInterval(timer);
+  }, [slides]);
+
+  if (slides.length === 0)
+    return <div className="text-center py-20">Loading...</div>;
+
+  const slide = slides[current];
+
+  return (
+    <div className="relative font-sans text-white">
+      <Helmet>
+        <title>Aashvi Automotive | Rajnagar, Madhubani</title>
+        <meta
+          name="description"
+          content="Trusted multibrand two-wheeler workshop in Rajnagar, Madhubani. Book bike service, repairs, and washing online."
+        />
+        <meta
+          property="og:image"
+          content={
+            slides[0]?.image ||
+            "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
+          }
+        />
+      </Helmet>
+
+      {/* Hero Section */}
+      <div className="relative h-[100vh] overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0 bg-center bg-cover"
+            style={{ backgroundImage: `url(${slide.image})` }}
+          />
+        </AnimatePresence>
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
+
+        {/* Text content */}
+        <motion.div
+          key={language + current}
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 flex flex-col justify-center items-center text-center px-6 md:px-20 h-full"
+        >
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-lg text-orange-400">
+            {language === "en" ? slide.title_en : slide.title_hi}
+          </h1>
+          <p className="text-lg md:text-2xl max-w-3xl mb-8 text-gray-100 drop-shadow">
+            {language === "en" ? slide.desc_en : slide.desc_hi}
+          </p>
+
+          <a
+            href="/booking"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            {language === "en"
+              ? slide.cta_text.split("/")[0].trim()
+              : slide.cta_text.split("/")[1].trim()}
+          </a>
+        </motion.div>
+
+        {/* Carousel indicators */}
+        <div className="absolute bottom-6 w-full flex justify-center space-x-2 z-20">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === current
+                  ? "bg-orange-500 scale-125"
+                  : "bg-white/50 hover:bg-white/80"
+              }`}
+              onClick={() => setCurrent(index)}
+            ></div>
+          ))}
+        </div>
+      </div>
+
+      <ServicesSection language={language} />
+      <PromoBanner language={language} />
+      <AboutSection language={language} />
+      <TestimonialsSection language={language} />
+      <ContactSection language={language} />
+    </div>
+  );
+};
+
+export default Home;
