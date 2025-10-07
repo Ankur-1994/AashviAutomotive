@@ -5,6 +5,7 @@ import { db } from "../services/firebase";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaMotorcycle, FaTools, FaHome, FaStar } from "react-icons/fa";
+import SeoHelmet from "./SeoHelmet";
 
 interface AboutData {
   image: string;
@@ -56,6 +57,17 @@ const AboutSection = ({ language }: AboutSectionProps) => {
 
   return (
     <section className="relative overflow-hidden py-24 px-6 md:px-20 bg-white">
+      <SeoHelmet
+        pageKey="about"
+        language={language}
+        title={language === "en" ? "About Us" : "हमारे बारे में"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AutoRepair",
+          name: "Aashvi Automotive",
+          parentOrganization: "Service Force",
+        }}
+      />
       {/* 🔶 Balanced glowing backgrounds */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(255,102,0,0.12),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,rgba(255,102,0,0.12),transparent_60%)]"></div>

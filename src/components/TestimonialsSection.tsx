@@ -1,8 +1,9 @@
+// src/components/TestimonialsSection.tsx
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { motion } from "framer-motion";
-import { FaStar, FaRegStar } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaStar } from "react-icons/fa";
 
 interface Testimonial {
   name: string;
@@ -11,21 +12,28 @@ interface Testimonial {
   review_hi: string;
 }
 
+interface TestimonialsContent {
+  title_en: string;
+  title_hi: string;
+  subtitle_en: string;
+  subtitle_hi: string;
+  reviews: Testimonial[];
+}
+
 interface TestimonialsSectionProps {
   language: "en" | "hi";
 }
 
 const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [data, setData] = useState<TestimonialsContent | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
+  // 🔹 Fetch from Firebase
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const docRef = doc(db, "content", "testimonials");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setTestimonials(docSnap.data().reviews || []);
-        }
+        const snap = await getDoc(doc(db, "content", "testimonials"));
+        if (snap.exists()) setData(snap.data() as TestimonialsContent);
       } catch (err) {
         console.error("Error fetching testimonials:", err);
       }
@@ -33,45 +41,79 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
     fetchTestimonials();
   }, []);
 
-  if (!testimonials.length) return null;
+  // 🔹 Auto slide
+  useEffect(() => {
+    if (!data?.reviews?.length) return;
+    const id = setInterval(
+      () => setActiveIndex((p) => (p + 1) % data.reviews.length),
+      7000
+    );
+    return () => clearInterval(id);
+  }, [data?.reviews?.length]);
+
+  if (!data || !data.reviews?.length) return null;
+  const t = data.reviews[activeIndex];
 
   return (
-    <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-[#0B3B74]/5 to-white text-gray-900">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-[#0B3B74] mb-3">
-          {language === "en"
-            ? "What Our Customers Say"
-            : "हमारे ग्राहक क्या कहते हैं"}
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          {language === "en"
-            ? "Real feedback from our happy customers across Rajnagar and Madhubani."
-            : "राजनगर और मधुबनी के हमारे खुश ग्राहकों की सच्ची प्रतिक्रियाएँ।"}
-        </p>
+    <section className="relative py-24 px-6 md:px-20 bg-gradient-to-br from-[#0B3B74]/90 via-[#0B3B74]/70 to-white overflow-hidden text-white">
+      {/* Decorative glows */}
+      <div className="pointer-events-none absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_70%)]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_bottom_right,rgba(255,102,0,0.12),transparent_70%)]" />
+
+      <div className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-12">
+        {/* LEFT: Section title and subtitle (from Firebase) */}
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-snug text-white">
+            {language === "en" ? data.title_en : data.title_hi}
+          </h2>
+          <p className="text-blue-100 max-w-md mx-auto md:mx-0 leading-relaxed">
+            {language === "en" ? data.subtitle_en : data.subtitle_hi}
+          </p>
+        </div>
+
+        {/* RIGHT: Rotating testimonial card */}
+        <div className="flex-1 relative w-full md:w-[500px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              transition={{ duration: 0.6 }}
+              className="relative bg-white text-gray-900 rounded-3xl shadow-2xl border border-blue-100 p-10 w-full mx-auto overflow-hidden"
+            >
+              {/* Review content */}
+              <p className="text-gray-700 italic text-base md:text-lg leading-relaxed mb-6">
+                “{language === "en" ? t.review_en : t.review_hi}”
+              </p>
+
+              <div className="flex justify-center mb-2 text-orange-500">
+                {Array.from({ length: 5 }).map((_, i) =>
+                  i < t.rating ? <FaStar key={i} /> : null
+                )}
+              </div>
+
+              <h4 className="text-[#0B3B74] font-semibold text-center text-lg">
+                — {t.name}
+              </h4>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8 max-w-6xl mx-auto">
-        {testimonials.map((t, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.15 }}
-            className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="flex justify-center mb-3 text-orange-400">
-              {Array.from({ length: 5 }).map((_, i) =>
-                i < t.rating ? <FaStar key={i} /> : <FaRegStar key={i} />
-              )}
-            </div>
-            <p className="text-gray-700 text-sm italic mb-4 leading-relaxed">
-              “{language === "en" ? t.review_en : t.review_hi}”
-            </p>
-            <h4 className="text-[#0B3B74] font-semibold text-center">
-              — {t.name}
-            </h4>
-          </motion.div>
+      {/* Dots navigation */}
+      <div className="flex justify-center mt-10 gap-2">
+        {data.reviews.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveIndex(i)}
+            className={`w-3 h-3 rounded-full transition ${
+              i === activeIndex
+                ? "bg-orange-500 scale-110"
+                : "bg-white/50 hover:bg-orange-400"
+            }`}
+            aria-label={`Go to testimonial ${i + 1}`}
+          />
         ))}
       </div>
     </section>

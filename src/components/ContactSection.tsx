@@ -7,7 +7,9 @@ import {
   FaPhoneAlt,
   FaMapMarkerAlt,
   FaEnvelope,
+  FaClock,
 } from "react-icons/fa";
+import SeoHelmet from "../components/SeoHelmet";
 
 interface ContactData {
   title_en: string;
@@ -48,42 +50,87 @@ const ContactSection = ({ language }: ContactSectionProps) => {
 
   if (!contact) return null;
 
+  const isEn = language === "en";
+
   return (
-    <section className="py-20 px-6 md:px-20 bg-[#0B3B74]/5 text-gray-900">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-        {/* Left: Contact Info */}
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-[#FDF5EF] to-[#0B3B74]/5 py-20 px-6 md:px-20">
+      {/* 🔹 SEO Meta */}
+      <SeoHelmet
+        pageKey="contact"
+        language={language}
+        title={language === "en" ? "Contact Us" : "संपर्क करें"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Aashvi Automotive",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress:
+              "Rishikesh Complex, Simri Dih Chowk, Rajnagar, Madhubani",
+            addressRegion: "Bihar",
+            postalCode: "847235",
+            addressCountry: "IN",
+          },
+          telephone: "+91 9229768624",
+          url: "https://aashviautomotive.web.app/",
+        }}
+      />
+
+      {/* 🔹 Background Accents */}
+      <div className="absolute top-0 left-0 w-60 h-60 bg-orange-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-800/10 rounded-full blur-3xl"></div>
+
+      {/* 🔹 Layout */}
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+        {/* LEFT: Contact Info */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0B3B74] mb-4">
-            {language === "en" ? contact.title_en : contact.title_hi}
+          <h2 className="text-4xl md:text-5xl font-bold text-[#0B3B74] mb-4">
+            {isEn ? contact.title_en : contact.title_hi}
           </h2>
 
-          <p className="text-gray-700 mb-6 leading-relaxed">
-            {language === "en" ? contact.desc_en : contact.desc_hi}
+          <p className="text-gray-700 mb-8 text-base md:text-lg leading-relaxed">
+            {isEn ? contact.desc_en : contact.desc_hi}
           </p>
 
-          <div className="space-y-3 mb-6 text-gray-800">
-            <p className="flex items-center gap-3">
-              <FaMapMarkerAlt className="text-orange-500" />
-              {language === "en" ? contact.address_en : contact.address_hi}
-            </p>
-            <p className="flex items-center gap-3">
+          {/* Contact Details */}
+          <div className="space-y-4 mb-8 text-gray-800">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-start gap-3"
+            >
+              <FaMapMarkerAlt className="text-orange-500 mt-1" />
+              <p>{isEn ? contact.address_en : contact.address_hi}</p>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3"
+            >
               <FaPhoneAlt className="text-orange-500" />
               <a href={`tel:${contact.phone}`} className="hover:underline">
                 {contact.phone}
               </a>
-            </p>
-            <p className="flex items-center gap-3">
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3"
+            >
               <FaEnvelope className="text-orange-500" />
               <a href={`mailto:${contact.email}`} className="hover:underline">
                 {contact.email}
               </a>
-            </p>
-            <p className="flex items-center gap-3">
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3"
+            >
               <FaWhatsapp className="text-green-600" />
               <a
                 href={`https://wa.me/${contact.whatsapp.replace(
@@ -92,35 +139,59 @@ const ContactSection = ({ language }: ContactSectionProps) => {
                 )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline"
+                className="hover:underline font-medium"
               >
-                {language === "en"
-                  ? "Chat on WhatsApp"
-                  : "व्हाट्सएप पर चैट करें"}
+                {isEn ? "Chat on WhatsApp" : "व्हाट्सएप पर चैट करें"}
               </a>
-            </p>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3"
+            >
+              <FaClock className="text-orange-500" />
+              <span className="font-semibold">
+                {isEn ? contact.hours_en : contact.hours_hi}
+              </span>
+            </motion.div>
           </div>
 
-          <p className="font-semibold text-[#0B3B74]">
-            {language === "en" ? contact.hours_en : contact.hours_hi}
-          </p>
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap gap-4">
+            <a
+              href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-md font-semibold transition-all"
+            >
+              {isEn ? "WhatsApp Now" : "अभी व्हाट्सएप करें"}
+            </a>
+            <a
+              href={`tel:${contact.phone}`}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg shadow-md font-semibold transition-all"
+            >
+              {isEn ? "Call Us" : "हमें कॉल करें"}
+            </a>
+          </div>
         </motion.div>
 
-        {/* Right: Google Map */}
+        {/* RIGHT: Google Map */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <iframe
-            src={contact.google_map_embed}
-            width="100%"
-            height="350"
-            loading="lazy"
-            className="rounded-2xl shadow-lg border-0 w-full"
-            allowFullScreen
-          ></iframe>
+          <div className="rounded-2xl shadow-2xl overflow-hidden border border-gray-100 hover:shadow-orange-200 transition-all duration-500">
+            <iframe
+              src={contact.google_map_embed}
+              width="100%"
+              height="400"
+              loading="lazy"
+              className="w-full h-[400px]"
+              allowFullScreen
+            ></iframe>
+          </div>
         </motion.div>
       </div>
     </section>

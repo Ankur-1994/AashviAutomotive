@@ -1,232 +1,446 @@
-import { useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { doc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
-import { FaWhatsapp } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaRegCalendarAlt } from "react-icons/fa";
+
+interface BookingContent {
+  hero_title_en: string;
+  hero_title_hi: string;
+  hero_desc_en: string;
+  hero_desc_hi: string;
+  hero_image: string;
+  form_title_en: string;
+  form_title_hi: string;
+  success_msg_en: string;
+  success_msg_hi: string;
+}
+
+interface BookingForm {
+  name: string;
+  phone: string;
+  brand: string;
+  vehicle: string;
+  serviceType: string;
+  date: string;
+  message: string;
+}
 
 interface BookingProps {
   language: "en" | "hi";
 }
 
 const Booking = ({ language }: BookingProps) => {
-  const [form, setForm] = useState({
+  const [content, setContent] = useState<BookingContent | null>(null);
+  const [form, setForm] = useState<BookingForm>({
     name: "",
     phone: "",
-    bikeModel: "",
+    brand: "",
+    vehicle: "",
     serviceType: "",
-    preferredDate: "",
-    notes: "",
+    date: "",
+    message: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
+  // track touched fields + submit attempt for clean inline validation
+  const [touched, setTouched] = useState<Record<keyof BookingForm, boolean>>({
+    name: false,
+    phone: false,
+    brand: false,
+    vehicle: false,
+    serviceType: false,
+    date: false,
+    message: false,
+  });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const isEn = language === "en";
+
+  // ----- fetch page content -----
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const snap = await getDoc(doc(db, "content", "bookings"));
+        if (snap.exists()) setContent(snap.data() as BookingContent);
+      } catch (err) {
+        console.error("Error loading booking content:", err);
+      }
+    };
+    fetchContent();
+  }, []);
+
+  // ----- local (IST-safe) min date string YYYY-MM-DD -----
+  const minDate = useMemo(() => {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`; // local date, avoids UTC off-by-one
+  }, []);
+
+  // ----- validation -----
+  const errors = useMemo(() => {
+    const e: Partial<Record<keyof BookingForm, string>> = {};
+    if (!form.name.trim()) e.name = isEn ? "Name is required" : "नाम आवश्यक है";
+    if (!/^\d{10}$/.test(form.phone))
+      e.phone = isEn ? "Enter 10-digit number" : "10 अंकों का नंबर दर्ज करें";
+    if (!form.brand.trim())
+      e.brand = isEn ? "Brand is required" : "ब्रांड आवश्यक है";
+    if (!form.vehicle.trim())
+      e.vehicle = isEn ? "Model is required" : "मॉडल आवश्यक है";
+    if (!form.serviceType)
+      e.serviceType = isEn ? "Select a service" : "सेवा चुनें";
+    if (!form.date) {
+      e.date = isEn ? "Select a date" : "तारीख चुनें";
+    } else if (form.date < minDate) {
+      e.date = isEn ? "Past dates not allowed" : "पिछली तारीख़ चुनना संभव नहीं";
+    }
+    return e;
+  }, [form, isEn, minDate]);
+
+  // ----- handlers -----
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const markTouched = (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+  };
+
+  const dateRef = useRef<HTMLInputElement>(null);
+  const openDatePicker = () => {
+    // focus + try native showPicker for better UX
+    dateRef.current?.focus();
+    (dateRef.current as any)?.showPicker?.();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitAttempted(true);
+
+    // if any error -> prevent submit
+    if (Object.keys(errors).length > 0) {
+      // optionally, scroll to first error
+      const firstErrorKey = Object.keys(errors)[0] as keyof BookingForm;
+      const el = document.querySelector(
+        `[name="${firstErrorKey}"]`
+      ) as HTMLElement | null;
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     try {
       await addDoc(collection(db, "bookings"), {
         ...form,
-        language,
-        timestamp: serverTimestamp(),
+        createdAt: Timestamp.now(),
       });
-
-      // ✅ WhatsApp Notification to Workshop Owner
-      const message = `New Booking Request 🚲%0A
-Name: ${form.name}%0A
-Phone: ${form.phone}%0A
-Bike: ${form.bikeModel}%0A
-Service: ${form.serviceType}%0A
-Date: ${form.preferredDate}%0A
-Notes: ${form.notes || "N/A"}`;
-
-      window.open(`https://wa.me/919800000000?text=${message}`, "_blank");
-
-      setSuccess(true);
+      setSubmitted(true);
       setForm({
         name: "",
         phone: "",
-        bikeModel: "",
+        brand: "",
+        vehicle: "",
         serviceType: "",
-        preferredDate: "",
-        notes: "",
+        date: "",
+        message: "",
       });
+      setTouched({
+        name: false,
+        phone: false,
+        brand: false,
+        vehicle: false,
+        serviceType: false,
+        date: false,
+        message: false,
+      });
+      setSubmitAttempted(false);
     } catch (err) {
-      console.error("Booking submission failed:", err);
-    } finally {
-      setLoading(false);
+      console.error("Error submitting booking:", err);
     }
   };
 
+  if (!content)
+    return (
+      <div className="text-center py-40 text-gray-500 text-lg">Loading...</div>
+    );
+
   return (
-    <section className="min-h-screen bg-gray-50 py-20 px-6 md:px-20">
+    <div className="font-sans text-gray-900">
       <Helmet>
         <title>
-          {language === "en"
+          {isEn
             ? "Book Service | Aashvi Automotive"
-            : "सेवा बुक करें | आश्वी ऑटोमोटिव"}
+            : "सर्विस बुक करें | आश्वी ऑटोमोटिव"}
         </title>
+        <meta
+          name="description"
+          content={
+            isEn
+              ? "Book your bike or scooter service online with Aashvi Automotive in Rajnagar, Madhubani — trusted multibrand two-wheeler workshop."
+              : "राजनगर, मधुबनी में आश्वी ऑटोमोटिव पर अपनी बाइक या स्कूटर सर्विस ऑनलाइन बुक करें — भरोसेमंद मल्टीब्रांड टू-व्हीलर वर्कशॉप।"
+          }
+        />
       </Helmet>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 md:p-12"
+      {/* hero */}
+      <section
+        className="relative min-h-[60vh] flex flex-col justify-center items-center text-center text-white bg-cover bg-center"
+        style={{ backgroundImage: `url(${content.hero_image})` }}
       >
-        <h2 className="text-3xl md:text-4xl font-bold text-[#0B3B74] mb-6 text-center">
-          {language === "en"
-            ? "Book Your Bike Service"
-            : "अपनी बाइक सर्विस बुक करें"}
-        </h2>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 px-6"
+        >
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            {isEn ? content.hero_title_en : content.hero_title_hi}
+          </h1>
+          <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-200">
+            {isEn ? content.hero_desc_en : content.hero_desc_hi}
+          </p>
+        </motion.div>
+      </section>
 
-        {success && (
-          <div className="bg-green-100 text-green-800 px-4 py-3 mb-6 rounded-lg text-center font-medium">
-            {language === "en"
-              ? "Booking submitted successfully! We’ll contact you soon."
-              : "बुकिंग सफलतापूर्वक जमा हो गई है! हम जल्द ही आपसे संपर्क करेंगे।"}
-          </div>
-        )}
+      {/* form */}
+      <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-white via-[#FDF5EF] to-white">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-12">
+          <h2 className="text-3xl font-bold text-[#0B3B74] mb-6 text-center">
+            {isEn ? content.form_title_en : content.form_title_hi}
+          </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Full Name" : "पूरा नाम"}
-            </label>
-            <input
-              type="text"
-              name="name"
-              required
-              value={form.name}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Contact Number" : "संपर्क नंबर"}
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              required
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Bike Model" : "बाइक मॉडल"}
-            </label>
-            <input
-              type="text"
-              name="bikeModel"
-              required
-              value={form.bikeModel}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Service Type" : "सेवा प्रकार"}
-            </label>
-            <select
-              name="serviceType"
-              required
-              value={form.serviceType}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
+          {submitted ? (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-green-600 text-lg font-medium"
             >
-              <option value="">
-                {language === "en" ? "Select..." : "चुनें..."}
-              </option>
-              <option value="Periodic Service">
-                {language === "en" ? "Periodic Service" : "नियतकालिक सर्विस"}
-              </option>
-              <option value="General Repair">
-                {language === "en" ? "General Repair" : "सामान्य मरम्मत"}
-              </option>
-              <option value="Washing">
-                {language === "en" ? "Washing" : "वॉशिंग"}
-              </option>
-              <option value="Oil Change">
-                {language === "en" ? "Oil Change" : "तेल बदलना"}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Preferred Date" : "पसंदीदा तारीख़"}
-            </label>
-            <input
-              type="date"
-              name="preferredDate"
-              required
-              value={form.preferredDate}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold mb-1">
-              {language === "en" ? "Additional Notes" : "अतिरिक्त नोट्स"}
-            </label>
-            <textarea
-              name="notes"
-              rows={3}
-              value={form.notes}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-orange-500 outline-none"
-            ></textarea>
-          </div>
-
-          <div className="text-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition-transform hover:scale-[1.03] disabled:opacity-60"
+              {isEn ? content.success_msg_en : content.success_msg_hi}
+            </motion.p>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="grid md:grid-cols-2 gap-6"
+              noValidate
             >
-              {loading
-                ? language === "en"
-                  ? "Submitting..."
-                  : "भेजा जा रहा है..."
-                : language === "en"
-                ? "Submit Booking"
-                : "बुकिंग सबमिट करें"}
-            </button>
-          </div>
-        </form>
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Full Name" : "पूरा नाम"}
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  placeholder={isEn ? "Your full name" : "अपना पूरा नाम"}
+                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                    (touched.name || submitAttempted) && errors.name
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                />
+                {(touched.name || submitAttempted) && errors.name && (
+                  <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                )}
+              </div>
 
-        <div className="mt-8 text-center">
-          <a
-            href="https://wa.me/919800000000?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-green-600 font-semibold hover:underline"
-          >
-            <FaWhatsapp />{" "}
-            {language === "en"
-              ? "Chat with us on WhatsApp"
-              : "व्हाट्सएप पर हमसे चैट करें"}
-          </a>
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Phone Number" : "फ़ोन नंबर"}
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  inputMode="numeric"
+                  pattern="\d{10}"
+                  maxLength={10}
+                  value={form.phone}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  placeholder={
+                    isEn ? "10-digit mobile number" : "10 अंकों का मोबाइल नंबर"
+                  }
+                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                    (touched.phone || submitAttempted) && errors.phone
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                />
+                {(touched.phone || submitAttempted) && errors.phone && (
+                  <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                )}
+              </div>
+
+              {/* Brand FIRST */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Brand" : "ब्रांड"}
+                </label>
+                <input
+                  type="text"
+                  name="brand"
+                  value={form.brand}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  placeholder={
+                    isEn
+                      ? "e.g., Honda, Hero, TVS"
+                      : "जैसे, होंडा, हीरो, टीवीएस"
+                  }
+                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                    (touched.brand || submitAttempted) && errors.brand
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                />
+                {(touched.brand || submitAttempted) && errors.brand && (
+                  <p className="text-red-500 text-xs mt-1">{errors.brand}</p>
+                )}
+              </div>
+
+              {/* Vehicle Model SECOND */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Vehicle Model" : "वाहन मॉडल"}
+                </label>
+                <input
+                  type="text"
+                  name="vehicle"
+                  value={form.vehicle}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  placeholder={isEn ? "e.g., Activa 6G" : "जैसे, एक्टिवा 6G"}
+                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                    (touched.vehicle || submitAttempted) && errors.vehicle
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                />
+                {(touched.vehicle || submitAttempted) && errors.vehicle && (
+                  <p className="text-red-500 text-xs mt-1">{errors.vehicle}</p>
+                )}
+              </div>
+
+              {/* Service Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Service Type" : "सेवा प्रकार"}
+                </label>
+                <select
+                  name="serviceType"
+                  value={form.serviceType}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                    (touched.serviceType || submitAttempted) &&
+                    errors.serviceType
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                >
+                  <option value="">
+                    {isEn ? "Select Service Type" : "सेवा प्रकार चुनें"}
+                  </option>
+                  <option value="general">
+                    {isEn ? "General Service" : "जनरल सर्विस"}
+                  </option>
+                  <option value="repair">
+                    {isEn ? "Repair & Maintenance" : "रिपेयर और मेंटेनेंस"}
+                  </option>
+                  <option value="washing">
+                    {isEn ? "Washing & Polishing" : "वॉशिंग और पॉलिशिंग"}
+                  </option>
+                  <option value="pickup">
+                    {isEn ? "Pickup & Drop" : "पिकअप और ड्रॉप"}
+                  </option>
+                </select>
+                {(touched.serviceType || submitAttempted) &&
+                  errors.serviceType && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.serviceType}
+                    </p>
+                  )}
+              </div>
+
+              {/* Date (opens on any click, disables past) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Preferred Date" : "पसंदीदा तारीख"}
+                </label>
+                <div
+                  className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer ${
+                    (touched.date || submitAttempted) && errors.date
+                      ? "border-red-400"
+                      : "border-gray-300"
+                  }`}
+                  onClick={openDatePicker}
+                >
+                  <FaRegCalendarAlt className="text-gray-500" />
+                  <input
+                    ref={dateRef}
+                    type="date"
+                    name="date"
+                    value={form.date}
+                    min={minDate}
+                    onChange={handleChange}
+                    onBlur={markTouched}
+                    className="w-full outline-none bg-transparent cursor-pointer"
+                  />
+                </div>
+                {(touched.date || submitAttempted) && errors.date && (
+                  <p className="text-red-500 text-xs mt-1">{errors.date}</p>
+                )}
+              </div>
+
+              {/* Message */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEn ? "Additional Details" : "अतिरिक्त विवरण"}
+                </label>
+                <textarea
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  onBlur={markTouched}
+                  placeholder={
+                    isEn
+                      ? "Describe any specific issues or requirements"
+                      : "कोई विशेष समस्या या आवश्यकता बताएं"
+                  }
+                  className="border rounded-lg px-4 py-3 w-full h-28 focus:ring-2 focus:ring-orange-500 outline-none transition border-gray-300"
+                />
+              </div>
+
+              {/* Submit */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                className="md:col-span-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-lg shadow-md transition-transform"
+              >
+                {isEn ? "Submit Booking" : "बुकिंग सबमिट करें"}
+              </motion.button>
+            </form>
+          )}
         </div>
-      </motion.div>
-    </section>
+      </section>
+    </div>
   );
 };
 

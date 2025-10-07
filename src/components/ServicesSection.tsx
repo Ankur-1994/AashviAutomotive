@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import SeoHelmet from "./SeoHelmet";
 
 interface ServiceItem {
   icon: string;
@@ -61,6 +62,21 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
 
   return (
     <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-[#0B3B74]/5 to-white text-gray-900">
+      <SeoHelmet
+        pageKey="services"
+        language={language}
+        title={language === "en" ? "Our Services" : "हमारी सेवाएँ"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          serviceType: "Bike Repair & Maintenance",
+          provider: {
+            "@type": "AutoRepair",
+            name: "Aashvi Automotive",
+            areaServed: "Madhubani, Bihar",
+          },
+        }}
+      />
       {/* Header */}
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-[#0B3B74] mb-4">{heading}</h2>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { Helmet } from "react-helmet";
 import { motion, AnimatePresence } from "framer-motion";
 import ServicesSection from "../components/ServicesSection";
 import PromoBanner from "../components/PromoBanner";
@@ -9,6 +8,7 @@ import AboutSection from "../components/AboutSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import ContactSection from "../components/ContactSection";
 import BrandShowcaseSection from "../components/BrandShowcaseSection";
+import SeoHelmet from "../components/SeoHelmet";
 
 interface Slide {
   image: string;
@@ -53,20 +53,18 @@ const Home = ({ language }: HomeProps) => {
 
   return (
     <div className="relative font-sans text-white">
-      <Helmet>
-        <title>Aashvi Automotive | Rajnagar, Madhubani</title>
-        <meta
-          name="description"
-          content="Trusted multibrand two-wheeler workshop in Rajnagar, Madhubani. Book bike service, repairs, and washing online."
-        />
-        <meta
-          property="og:image"
-          content={
-            slides[0]?.image ||
-            "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
-          }
-        />
-      </Helmet>
+      <SeoHelmet
+        pageKey="home"
+        language={language}
+        title={language === "en" ? "Home" : "मुखपृष्ठ"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AutoRepair",
+          name: "Aashvi Automotive",
+          description:
+            "Trusted Multibrand Two-Wheeler Workshop in Rajnagar, Madhubani",
+        }}
+      />
 
       {/* Hero Section */}
       <div className="relative h-[100vh] overflow-hidden">
