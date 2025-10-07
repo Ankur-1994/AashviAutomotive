@@ -8,6 +8,7 @@ import PromoBanner from "../components/PromoBanner";
 import AboutSection from "../components/AboutSection";
 import TestimonialsSection from "../components/TestimonialsSection";
 import ContactSection from "../components/ContactSection";
+import BrandShowcaseSection from "../components/BrandShowcaseSection";
 
 interface Slide {
   image: string;
@@ -126,6 +127,7 @@ const Home = ({ language }: HomeProps) => {
       </div>
 
       <ServicesSection language={language} />
+      <BrandShowcaseSection language={language} />
       <PromoBanner language={language} />
       <AboutSection language={language} />
       <TestimonialsSection language={language} />
