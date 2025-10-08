@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import SeoHelmet from "../components/SeoHelmet";
 
 interface AboutContent {
   title_about_en: string;
@@ -51,23 +51,22 @@ const About = ({ language }: AboutProps) => {
 
   return (
     <div className="font-sans overflow-hidden relative">
-      <Helmet>
-        <title>
-          {isEn
-            ? `About Us | Aashvi Automotive`
-            : `हमारे बारे में | आश्वी ऑटोमोटिव`}
-        </title>
-        <meta
-          name="description"
-          content={
-            isEn
-              ? about.desc_en ||
-                "Learn more about Aashvi Automotive, your trusted multibrand 2-wheeler service center in Rajnagar, Madhubani."
-              : about.desc_hi ||
-                "आश्वी ऑटोमोटिव के बारे में जानें, राजनगर, मधुबनी का भरोसेमंद मल्टीब्रांड टू-व्हीलर सर्विस सेंटर।"
-          }
-        />
-      </Helmet>
+      <SeoHelmet
+        pageKey="about"
+        language={language}
+        title={language === "en" ? "About Us" : "हमारे बारे में"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Aashvi Automotive",
+          parentOrganization: {
+            "@type": "Organization",
+            name: "Service Force",
+          },
+          url: "https://aashviautomotive.web.app/about",
+          logo: "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
+        }}
+      />
 
       {/* 🔹 Hero Section */}
       <section className="relative min-h-[60vh] flex flex-col justify-center items-center text-center bg-gradient-to-r from-[#0B3B74] via-[#0B3B74]/95 to-[#102f5c] text-white px-6 md:px-20 py-24 overflow-hidden">

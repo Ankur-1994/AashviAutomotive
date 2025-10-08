@@ -13,6 +13,15 @@ module.exports = {
         bgLight: "#F7FAFC",
         textDark: "#0f172a",
       },
+      animation: {
+        gradientMove: "gradientMove 12s ease-in-out infinite",
+      },
+      keyframes: {
+        gradientMove: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+      },
     },
   },
   plugins: [],

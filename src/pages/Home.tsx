@@ -61,8 +61,26 @@ const Home = ({ language }: HomeProps) => {
           "@context": "https://schema.org",
           "@type": "AutoRepair",
           name: "Aashvi Automotive",
-          description:
-            "Trusted Multibrand Two-Wheeler Workshop in Rajnagar, Madhubani",
+          image:
+            "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
+          telephone: "+919229768624",
+          email: "aashviautomotive2025@gmail.com",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress:
+              "Ground Floor, Rishikesh Complex, Simri Dih Chowk, Near Hatiyagachi",
+            addressLocality: "Rajnagar",
+            addressRegion: "Madhubani",
+            postalCode: "847235",
+            addressCountry: "IN",
+          },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 26.3841554,
+            longitude: 86.1427815,
+          },
+          openingHours: ["Mon-Sun 09:00-18:00"],
+          url: "https://aashviautomotive.web.app/",
         }}
       />
 

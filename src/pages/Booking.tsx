@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { doc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { Helmet } from "react-helmet";
-import { motion } from "framer-motion";
-import { FaRegCalendarAlt } from "react-icons/fa";
+import { AnimatePresence, motion } from "framer-motion";
+import { FaChevronDown, FaRegCalendarAlt } from "react-icons/fa";
+import { DayPicker } from "react-day-picker";
+import SeoHelmet from "../components/SeoHelmet";
 
 interface BookingContent {
   hero_title_en: string;
@@ -31,6 +33,12 @@ interface BookingProps {
   language: "en" | "hi";
 }
 
+interface ServiceType {
+  id: number;
+  name_en: string;
+  name_hi: string;
+}
+
 const Booking = ({ language }: BookingProps) => {
   const [content, setContent] = useState<BookingContent | null>(null);
   const [form, setForm] = useState<BookingForm>({
@@ -43,6 +51,11 @@ const Booking = ({ language }: BookingProps) => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showServiceType, setShowServiceType] = useState(false);
+  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
 
   // track touched fields + submit attempt for clean inline validation
   const [touched, setTouched] = useState<Record<keyof BookingForm, boolean>>({
@@ -58,12 +71,38 @@ const Booking = ({ language }: BookingProps) => {
 
   const isEn = language === "en";
 
+  /* Close popup on outside click */
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(e.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowServiceType(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // ----- fetch page content -----
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const snap = await getDoc(doc(db, "content", "bookings"));
-        if (snap.exists()) setContent(snap.data() as BookingContent);
+        if (snap.exists()) {
+          const data = snap.data();
+          setContent(data as BookingContent);
+          if (Array.isArray(data.service_types)) {
+            setServiceTypes(data.service_types);
+          }
+        }
       } catch (err) {
         console.error("Error loading booking content:", err);
       }
@@ -117,13 +156,6 @@ const Booking = ({ language }: BookingProps) => {
   ) => {
     const { name } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
-  };
-
-  const dateRef = useRef<HTMLInputElement>(null);
-  const openDatePicker = () => {
-    // focus + try native showPicker for better UX
-    dateRef.current?.focus();
-    (dateRef.current as any)?.showPicker?.();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -193,6 +225,30 @@ const Booking = ({ language }: BookingProps) => {
           }
         />
       </Helmet>
+
+      <SeoHelmet
+        pageKey="booking"
+        language={language}
+        title={language === "en" ? "Book Service" : "सर्विस बुक करें"}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AutoRepair",
+          name: "Aashvi Automotive",
+          parentOrganization: "Service Force",
+          areaServed: {
+            "@type": "AdministrativeArea",
+            name: "Rajnagar, Madhubani, Bihar, India",
+          },
+          potentialAction: {
+            "@type": "ScheduleAction",
+            target: "/booking",
+            name:
+              language === "en"
+                ? "Book two-wheeler service"
+                : "टू-व्हीलर सर्विस बुक करें",
+          },
+        }}
+      />
 
       {/* hero */}
       <section
@@ -338,38 +394,70 @@ const Booking = ({ language }: BookingProps) => {
               </div>
 
               {/* Service Type */}
-              <div>
+              <div ref={dropdownRef} className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isEn ? "Service Type" : "सेवा प्रकार"}
+                  {isEn ? "Service Type" : "सेवा का प्रकार"}
                 </label>
-                <select
-                  name="serviceType"
-                  value={form.serviceType}
-                  onChange={handleChange}
-                  onBlur={markTouched}
-                  className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-orange-500 outline-none transition ${
+
+                <div
+                  onClick={() => setShowServiceType((prev) => !prev)}
+                  className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer transition-all ${
                     (touched.serviceType || submitAttempted) &&
                     errors.serviceType
                       ? "border-red-400"
-                      : "border-gray-300"
+                      : "border-gray-300 hover:border-orange-400"
                   }`}
                 >
-                  <option value="">
-                    {isEn ? "Select Service Type" : "सेवा प्रकार चुनें"}
-                  </option>
-                  <option value="general">
-                    {isEn ? "General Service" : "जनरल सर्विस"}
-                  </option>
-                  <option value="repair">
-                    {isEn ? "Repair & Maintenance" : "रिपेयर और मेंटेनेंस"}
-                  </option>
-                  <option value="washing">
-                    {isEn ? "Washing & Polishing" : "वॉशिंग और पॉलिशिंग"}
-                  </option>
-                  <option value="pickup">
-                    {isEn ? "Pickup & Drop" : "पिकअप और ड्रॉप"}
-                  </option>
-                </select>
+                  <span
+                    className={`${
+                      form.serviceType ? "text-gray-800" : "text-gray-500"
+                    } text-base font-normal tracking-wide`}
+                    style={{ fontFamily: "inherit" }}
+                  >
+                    {form.serviceType
+                      ? form.serviceType
+                      : isEn
+                      ? "Select service type"
+                      : "सेवा का प्रकार चुनें"}
+                  </span>
+                  <FaChevronDown
+                    className={`transition-transform ${
+                      showServiceType
+                        ? "rotate-180 text-orange-500"
+                        : "text-gray-500"
+                    }`}
+                  />
+                </div>
+
+                <AnimatePresence>
+                  {showServiceType && (
+                    <motion.ul
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.25 }}
+                      className="absolute z-50 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden w-full max-h-64 overflow-y-auto"
+                    >
+                      {serviceTypes.map((option) => (
+                        <li
+                          key={option.id}
+                          onClick={() => {
+                            const value = isEn
+                              ? option.name_en
+                              : option.name_hi;
+                            setForm((f) => ({ ...f, serviceType: value }));
+                            setTouched((t) => ({ ...t, serviceType: true }));
+                            setShowServiceType(false);
+                          }}
+                          className="px-4 py-3 hover:bg-orange-50 hover:text-orange-600 cursor-pointer transition-colors text-gray-800"
+                        >
+                          {isEn ? option.name_en : option.name_hi}
+                        </li>
+                      ))}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
+
                 {(touched.serviceType || submitAttempted) &&
                   errors.serviceType && (
                     <p className="text-red-500 text-xs mt-1">
@@ -378,35 +466,133 @@ const Booking = ({ language }: BookingProps) => {
                   )}
               </div>
 
-              {/* Date (opens on any click, disables past) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {isEn ? "Preferred Date" : "पसंदीदा तारीख"}
-                </label>
-                <div
-                  className={`flex items-center gap-3 border rounded-lg px-4 py-3 cursor-pointer ${
-                    (touched.date || submitAttempted) && errors.date
-                      ? "border-red-400"
-                      : "border-gray-300"
-                  }`}
-                  onClick={openDatePicker}
-                >
-                  <FaRegCalendarAlt className="text-gray-500" />
-                  <input
-                    ref={dateRef}
-                    type="date"
-                    name="date"
-                    value={form.date}
-                    min={minDate}
-                    onChange={handleChange}
-                    onBlur={markTouched}
-                    className="w-full outline-none bg-transparent cursor-pointer"
-                  />
+              {/* Preferred Date (custom calendar) */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="relative" ref={calendarRef}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {isEn ? "Preferred Date" : "पसंदीदा तारीख"}
+                  </label>
+
+                  {/* Clickable Field */}
+                  <div
+                    onClick={() => setShowCalendar((prev) => !prev)}
+                    className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer transition-all ${
+                      (touched.date || submitAttempted) && errors.date
+                        ? "border-red-400"
+                        : "border-gray-300 hover:border-orange-400"
+                    }`}
+                  >
+                    <span
+                      className={`${
+                        form.date ? "text-gray-800" : "text-gray-500 italic"
+                      } select-none`}
+                    >
+                      {form.date
+                        ? new Date(form.date + "T00:00:00").toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
+                        : isEn
+                        ? "Select your preferred service date"
+                        : "अपनी पसंदीदा तारीख़ चुनें"}
+                    </span>
+                    <FaRegCalendarAlt className="text-gray-500" />
+                  </div>
+
+                  {(touched.date || submitAttempted) && errors.date && (
+                    <p className="text-red-500 text-xs mt-1">{errors.date}</p>
+                  )}
+
+                  {/* Calendar Popup */}
+                  <AnimatePresence>
+                    {showCalendar && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.25 }}
+                        className="absolute z-50 mt-2 bg-white/90 backdrop-blur-md rounded-xl shadow-2xl border border-gray-100 p-3"
+                      >
+                        <DayPicker
+                          mode="single"
+                          selected={
+                            form.date
+                              ? new Date(form.date + "T00:00:00")
+                              : undefined
+                          }
+                          onSelect={(d) => {
+                            if (!d) return;
+                            const local = new Date(
+                              d.getFullYear(),
+                              d.getMonth(),
+                              d.getDate()
+                            );
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            if (local < today) return; // block past days
+
+                            const iso = `${local.getFullYear()}-${String(
+                              local.getMonth() + 1
+                            ).padStart(2, "0")}-${String(
+                              local.getDate()
+                            ).padStart(2, "0")}`;
+                            setForm((f) => ({ ...f, date: iso }));
+                            setTouched((t) => ({ ...t, date: true }));
+                            setShowCalendar(false);
+                          }}
+                          /* ❌ make past days unclickable + faded */
+                          modifiers={{ disabled: { before: new Date() } }}
+                          modifiersStyles={{
+                            disabled: { opacity: 0.3, pointerEvents: "none" },
+                            selected: {
+                              backgroundColor: "#f97316", // ✅ Aashvi Orange
+                              color: "#fff",
+                              fontWeight: 700,
+                              borderRadius: "8px",
+                            },
+                          }}
+                          /* ✅ force theme to orange + remove blue ring */
+                          style={{
+                            ["--rdp-accent-color" as any]: "#f97316",
+                            ["--rdp-accent-background-color" as any]: "#f97316",
+                            ["--rdp-outline" as any]: "0", // remove focus ring
+                            ["--rdp-outline-selected" as any]: "0", // remove selected ring
+                          }}
+                          /* ✅ brand styling; no blue border for 'today' */
+                          styles={{
+                            caption: { color: "#0B3B74", fontWeight: 600 },
+                            nav_button: { color: "#0B3B74" },
+                            head_cell: {
+                              color: "#0B3B74",
+                              fontWeight: 600,
+                              borderBottom: "1px solid #E5E7EB",
+                            },
+                            day: {
+                              color: "#1f2937",
+                              borderRadius: "8px",
+                              margin: "2px",
+                            },
+                            day_today: {
+                              color: "#0B3B74",
+                              fontWeight: 600,
+                              border: "none",
+                            }, // ⬅️ no border!
+                          }}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                {(touched.date || submitAttempted) && errors.date && (
-                  <p className="text-red-500 text-xs mt-1">{errors.date}</p>
-                )}
-              </div>
+              </motion.div>
 
               {/* Message */}
               <div className="md:col-span-2">

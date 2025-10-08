@@ -2,124 +2,47 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- Basic responsiveness -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Replace with your production domain -->
-    <link rel="canonical" href="https://YOUR_DOMAIN/" />
+    <!-- ✅ Canonical & hreflang -->
+    <link rel="canonical" href="https://aashviautomotive.web.app/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://aashviautomotive.web.app/"
+    />
+    <link
+      rel="alternate"
+      hreflang="hi"
+      href="https://aashviautomotive.web.app/hi/"
+    />
 
-    <!-- Page title (React Helmet will override per page) -->
+    <!-- ✅ Default title & description (React will override dynamically) -->
     <title>Aashvi Automotive — Trusted Multibrand Two-Wheeler Workshop</title>
 
-    <!-- Primary meta -->
-    <meta
-      name="description"
-      content="Aashvi Automotive — Trusted multibrand two-wheeler workshop in Rajnagar, Madhubani. Book online for service, repair, washing & genuine spare parts."
-    />
-    <!-- Optional; search engines mostly ignore keywords but it's ok to keep for some tools -->
-    <meta
-      name="keywords"
-      content="bike service Rajnagar, bike repair Madhubani, two wheeler workshop Rajnagar, Aashvi Automotive"
-    />
-
-    <!-- Hreflang for bilingual site (adjust URLs if you use /hi/ path) -->
-    <link rel="alternate" hreflang="en" href="https://YOUR_DOMAIN/" />
-    <link rel="alternate" hreflang="hi" href="https://YOUR_DOMAIN/hi/" />
-
-    <!-- Open Graph (share previews) - replace OG_IMAGE with actual CDN image -->
-    <meta property="og:locale" content="en_IN" />
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:title"
-      content="Aashvi Automotive — Trusted Multibrand Two-Wheeler Workshop"
-    />
-    <meta
-      property="og:description"
-      content="Aashvi Automotive provides professional servicing, repairs, detailing and genuine spare parts for all major bike brands in Rajnagar, Madhubani."
-    />
-    <meta
-      property="og:image"
-      content="https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
-    />
-    <meta property="og:url" content="https://YOUR_DOMAIN/" />
-    <meta property="og:site_name" content="Aashvi Automotive" />
-
-    <!-- Twitter card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Aashvi Automotive — Bike Service in Rajnagar"
-    />
-    <meta
-      name="twitter:description"
-      content="Book trusted multibrand bike servicing in Rajnagar, Madhubani. Pickup & drop, genuine parts, certified mechanics."
-    />
-    <meta
-      name="twitter:image"
-      content="https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
-    />
-
-    <!-- Theme / browser color -->
+    <!-- ✅ Theme color -->
     <meta name="theme-color" content="#0B3B74" />
 
-    <!-- Favicon & Apple touch (place actual files in /public) -->
+    <!-- ✅ Favicon & PWA -->
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-    <!-- Web manifest (optional, add manifest.webmanifest to /public) -->
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Fonts (preconnect + load) -->
+    <!-- ✅ Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Preload the primary hero image to improve LCP (replace with your CDN hero URL) -->
+    <!-- ✅ Preload hero image for faster LCP -->
     <link
       rel="preload"
       as="image"
       href="https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
     />
 
-    <!-- Minimal JSON-LD LocalBusiness (REPLACE with real data or let React Helmet insert dynamic JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "AutoRepair",
-        "name": "Aashvi Automotive",
-        "url": "https://YOUR_DOMAIN/",
-        "telephone": "+91 9123456789",
-        "email": "contact@aashviautomotive.in",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Ward No. 8, Near Rajnagar Railway Station",
-          "addressLocality": "Rajnagar",
-          "addressRegion": "Madhubani, Bihar",
-          "postalCode": "847235",
-          "addressCountry": "IN"
-        },
-        "openingHours": ["Mo-Sa 09:00-19:00", "Su 10:00-16:00"]
-      }
-    </script>
-
-    <!-- Performance note: avoid adding heavy 3rd-party scripts here. Add chat/analytics async just before </body>. -->
-  </head>
-
-  <body>
-    <noscript>
-      <strong
-        >JavaScript is required to run this app. Please enable JavaScript in
-        your browser.</strong
-      >
-    </noscript>
-
-    <div id="root"></div>
-
-    <!-- Vite entry -->
-    <script type="module" src="/src/main.tsx"></script>
-
+    <!-- ✅ Analytics / Chat (async load only) -->
     <script type="text/javascript">
       var Tawk_API = Tawk_API || {},
         Tawk_LoadStart = new Date();
@@ -133,7 +56,19 @@
         s0.parentNode.insertBefore(s1, s0);
       })();
     </script>
+  </head>
 
-    <!-- OPTIONAL: Google Analytics / GTM - add async & privacy-friendly setup if you need analytics -->
+  <body>
+    <noscript>
+      <strong
+        >JavaScript is required to run this app. Please enable JavaScript in
+        your browser.</strong
+      >
+    </noscript>
+
+    <div id="root"></div>
+
+    <!-- ✅ Vite entry -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
