@@ -63,7 +63,8 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
   const isLightPage =
     location.pathname === "/booking" ||
     location.pathname === "/contact" ||
-    location.pathname === "/refer";
+    location.pathname === "/refer" ||
+    location.pathname === "/services";
 
   const navClasses =
     isScrolled || isLightPage

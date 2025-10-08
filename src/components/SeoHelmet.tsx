@@ -46,7 +46,7 @@ const SeoHelmet = ({
       <Title key="title">{fullTitle}</Title>
       <Meta key="description" name="description" content={desc} />
       <Meta key="keywords" name="keywords" content={keywords} />
-      <HeadLink key="title" rel="canonical" href={canonicalUrl} />
+      <HeadLink key="canonical-link" rel="canonical" href={canonicalUrl} />
 
       {/* Open Graph */}
       <Meta key="og-type" property="og:type" content="website" />

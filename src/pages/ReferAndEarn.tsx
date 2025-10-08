@@ -63,19 +63,24 @@ const ReferAndEarn = ({ language }: ReferProps) => {
       />
 
       <section
-        className="relative flex items-center justify-center min-h-[calc(100vh-80px)] 
-  bg-gradient-to-br from-orange-50 via-white to-green-50 px-6 md:px-20"
+        className="relative flex flex-col justify-center items-center 
+  min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 
+  px-6 md:px-20 mt-[80px] md:mt-0 pb-16"
       >
         <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center">
           {/* Left: Banner Image */}
-          <motion.img
-            src={data.banner_url}
-            alt="Refer and Earn"
-            className="rounded-2xl shadow-xl w-full h-auto object-cover"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-          />
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="flex justify-center"
+          >
+            <img
+              src={data.banner_url}
+              alt="Refer and Earn"
+              className="rounded-2xl shadow-xl w-full max-w-md h-auto object-cover md:max-w-full"
+            />
+          </motion.div>
 
           {/* Right: Text Section */}
           <motion.div

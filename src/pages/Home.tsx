@@ -10,6 +10,7 @@ import ContactSection from "../components/ContactSection";
 import BrandShowcaseSection from "../components/BrandShowcaseSection";
 import SeoHelmet from "../components/SeoHelmet";
 import PartnershipSection from "../components/PartnershipSection";
+import { Link } from "react-router-dom";
 
 interface Slide {
   image: string;
@@ -18,6 +19,9 @@ interface Slide {
   desc_en: string;
   desc_hi: string;
   cta_text: string;
+  cta_link?: string;
+  order: number;
+  external?: boolean;
 }
 
 interface HomeProps {
@@ -33,7 +37,16 @@ const Home = ({ language }: HomeProps) => {
     const fetchSlides = async () => {
       const docRef = doc(db, "content", "home_hero");
       const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) setSlides(docSnap.data().slides as Slide[]);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (Array.isArray(data.slides)) {
+          // ✅ Sort client-side by order field
+          const orderedSlides = [...data.slides].sort(
+            (a: Slide, b: Slide) => a.order - b.order
+          );
+          setSlides(orderedSlides);
+        }
+      }
     };
     fetchSlides();
   }, []);
@@ -117,14 +130,28 @@ const Home = ({ language }: HomeProps) => {
             {language === "en" ? slide.desc_en : slide.desc_hi}
           </p>
 
-          <a
-            href="/booking"
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
-          >
-            {language === "en"
-              ? slide.cta_text.split("/")[0].trim()
-              : slide.cta_text.split("/")[1].trim()}
-          </a>
+          {slide.cta_link &&
+            (slide.external ? (
+              <a
+                href={slide.cta_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+              >
+                {language === "en"
+                  ? slide.cta_text.split("/")[0].trim()
+                  : slide.cta_text.split("/")[1].trim()}
+              </a>
+            ) : (
+              <Link
+                to={slide.cta_link}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+              >
+                {language === "en"
+                  ? slide.cta_text.split("/")[0].trim()
+                  : slide.cta_text.split("/")[1].trim()}
+              </Link>
+            ))}
         </motion.div>
 
         {/* Carousel indicators */}

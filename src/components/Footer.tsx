@@ -118,6 +118,22 @@ const Footer = ({ language }: FooterProps) => {
             </li>
             <li>
               <Link
+                to="/services"
+                className="hover:text-orange-400 transition-colors"
+              >
+                {isEn ? "Service" : "सेवाएं"}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/refer"
+                className="hover:text-orange-400 transition-colors"
+              >
+                {isEn ? "Refer And Earn" : "रेफर करें और कमाएँ"}
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/contact"
                 className="hover:text-orange-400 transition-colors"
               >

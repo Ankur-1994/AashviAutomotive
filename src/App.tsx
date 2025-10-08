@@ -11,6 +11,7 @@ import ReferAndEarn from "./pages/ReferAndEarn";
 // Optional: you can add a scroll-to-top effect when route changes
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import Services from "./pages/Services";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -37,6 +38,7 @@ function App() {
           <Route path="/booking" element={<Booking language={language} />} />
           <Route path="/contact" element={<Contact language={language} />} />
           <Route path="/refer" element={<ReferAndEarn language={language} />} />
+          <Route path="/services" element={<Services language={language} />} />
         </Routes>
       </main>
 
