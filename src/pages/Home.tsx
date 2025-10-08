@@ -9,6 +9,7 @@ import TestimonialsSection from "../components/TestimonialsSection";
 import ContactSection from "../components/ContactSection";
 import BrandShowcaseSection from "../components/BrandShowcaseSection";
 import SeoHelmet from "../components/SeoHelmet";
+import PartnershipSection from "../components/PartnershipSection";
 
 interface Slide {
   image: string;
@@ -142,6 +143,7 @@ const Home = ({ language }: HomeProps) => {
         </div>
       </div>
 
+      <PartnershipSection language={language} />
       <ServicesSection language={language} />
       <BrandShowcaseSection language={language} />
       <PromoBanner language={language} />

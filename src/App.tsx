@@ -6,6 +6,7 @@ import Booking from "./pages/Booking";
 import Contact from "./pages/Contact";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ReferAndEarn from "./pages/ReferAndEarn";
 
 // Optional: you can add a scroll-to-top effect when route changes
 import { useEffect } from "react";
@@ -35,6 +36,7 @@ function App() {
           <Route path="/about" element={<About language={language} />} />
           <Route path="/booking" element={<Booking language={language} />} />
           <Route path="/contact" element={<Contact language={language} />} />
+          <Route path="/refer" element={<ReferAndEarn language={language} />} />
         </Routes>
       </main>
 
