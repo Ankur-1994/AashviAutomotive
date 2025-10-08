@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { db } from "../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
+import SeoHelmet from "./SeoHelmet";
 
 interface Brand {
   name: string;
@@ -38,6 +39,71 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
 
   return (
     <section className="relative overflow-x-hidden overflow-y-visible py-20 px-6 md:px-20 bg-gradient-to-b from-white to-[#0B3B74]/5">
+      <SeoHelmet
+        pageKey="brands"
+        language={language}
+        title={
+          language === "en"
+            ? "We Service All Major Two-Wheeler Brands | Aashvi Automotive"
+            : "हम सभी प्रमुख टू-व्हीलर ब्रांडों की सर्विस करते हैं | आश्वी ऑटोमोटिव"
+        }
+        description={
+          language === "en"
+            ? "Aashvi Automotive in Rajnagar, Madhubani offers expert two-wheeler repair and maintenance services for all major brands including Hero, Honda, TVS, Bajaj, Yamaha, and Suzuki."
+            : "आश्वी ऑटोमोटिव, राजनगर (मधुबनी) में सभी प्रमुख टू-व्हीलर ब्रांडों जैसे हीरो, होंडा, टीवीएस, बजाज, यामाहा और सुजुकी की विशेषज्ञ सर्विस और मेंटेनेंस प्रदान करता है।"
+        }
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AutoRepair",
+          name: "Aashvi Automotive",
+          image: "https://aashviautomotive.web.app/assets/logo.png",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Rajnagar, Madhubani",
+            addressLocality: "Madhubani",
+            addressRegion: "Bihar",
+            postalCode: "847235",
+            addressCountry: "IN",
+          },
+          areaServed: ["Rajnagar", "Madhubani", "Bihar"],
+          serviceType: "Two-wheeler repair and maintenance",
+          makesOffer: {
+            "@type": "OfferCatalog",
+            name: "Two-Wheeler Brands Serviced",
+            itemListElement: [
+              {
+                "@type": "Product",
+                name: "Hero MotoCorp",
+              },
+              {
+                "@type": "Product",
+                name: "Honda Motorcycle & Scooter India",
+              },
+              {
+                "@type": "Product",
+                name: "TVS Motor",
+              },
+              {
+                "@type": "Product",
+                name: "Bajaj Auto",
+              },
+              {
+                "@type": "Product",
+                name: "Yamaha Motor",
+              },
+              {
+                "@type": "Product",
+                name: "Suzuki Motorcycle",
+              },
+            ],
+          },
+          sameAs: [
+            "https://www.facebook.com/aashviautomotive",
+            "https://maps.app.goo.gl/...your-map-link-here",
+          ],
+        }}
+      />
+
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#0B3B74]">
         {language === "en"
           ? "We Service All Major Brands"
@@ -113,6 +179,7 @@ function BrandsMarquee({
 
       {/* The moving track: two rows back-to-back */}
       <motion.div
+        data-brand-track
         className="flex gap-12"
         style={{ x, willChange: "transform" }}
       >

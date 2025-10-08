@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+[data-brand-track] {
+  transform-style: preserve-3d !important;
+  overflow: visible !important;
+}

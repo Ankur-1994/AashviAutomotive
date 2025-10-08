@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { useInView, motion } from "framer-motion";
 import SeoHelmet from "../components/SeoHelmet";
 import { Link } from "react-router-dom";
 import {
@@ -41,6 +42,11 @@ interface ServicesProps {
 
 const Services = ({ language }: ServicesProps) => {
   const [data, setData] = useState<ServicesContent | null>(null);
+  const ctaRef = useRef<HTMLDivElement | null>(null);
+  const isCtaInView = useInView(ctaRef, {
+    amount: 0.2,
+    margin: "0px 0px -200px 0px",
+  });
 
   const IconFor = (key: string) => {
     const base = "w-10 h-10 transition-colors duration-300";
@@ -170,6 +176,7 @@ const Services = ({ language }: ServicesProps) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
+        ref={ctaRef}
         className="relative mt-24 mx-auto max-w-4xl text-center bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl shadow-xl py-12 px-6 md:px-12 text-white z-10"
       >
         <h2 className="text-3xl font-bold mb-4">
@@ -192,6 +199,45 @@ const Services = ({ language }: ServicesProps) => {
 
       {/* subtle gradient overlay */}
       <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black via-transparent"></div>
+
+      {/* 🧡 Floating CTA Button with perfect circular glow */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{
+          opacity: isCtaInView ? 0 : 1,
+          scale: isCtaInView ? 0.8 : 1,
+          y: isCtaInView ? 20 : 0,
+        }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="fixed bottom-6 left-6 z-50"
+      >
+        <motion.div
+          className="relative rounded-full p-[2px] bg-transparent"
+          animate={{
+            boxShadow: [
+              "0 0 0px rgba(255, 153, 0, 0)",
+              "0 0 18px rgba(255, 153, 0, 0.8)",
+              "0 0 0px rgba(255, 153, 0, 0)",
+            ],
+          }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            repeatType: "mirror",
+            ease: "easeInOut",
+          }}
+        >
+          <Link
+            to="/booking"
+            className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-5 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+            style={{
+              filter: "drop-shadow(0 0 6px rgba(255,140,0,0.4))",
+            }}
+          >
+            {language === "en" ? "Book Now" : "अभी बुक करें"}
+          </Link>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
