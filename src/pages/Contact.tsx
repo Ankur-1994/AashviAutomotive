@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import {
   FaPhoneAlt,
   FaWhatsapp,
@@ -62,6 +63,18 @@ const Contact = ({ language }: ContactProps) => {
         ...form,
         createdAt: Timestamp.now(),
       });
+      // Send Email via EmailJS
+      const response = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID!,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT!,
+        {
+          name: form.name,
+          phone: form.phone,
+          message: form.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY!
+      );
+      console.log("📧 EmailJS response:", response);
       setForm({ name: "", phone: "", message: "" });
       setStatus("success");
       setTimeout(() => setStatus("idle"), 3000);

@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaChevronDown, FaRegCalendarAlt } from "react-icons/fa";
 import { DayPicker } from "react-day-picker";
 import SeoHelmet from "../components/SeoHelmet";
+import emailjs from "@emailjs/browser";
 
 interface BookingContent {
   hero_title_en: string;
@@ -56,6 +57,7 @@ const Booking = ({ language }: BookingProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showServiceType, setShowServiceType] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // track touched fields + submit attempt for clean inline validation
   const [touched, setTouched] = useState<Record<keyof BookingForm, boolean>>({
@@ -174,10 +176,28 @@ const Booking = ({ language }: BookingProps) => {
     }
 
     try {
+      setLoading(true);
       await addDoc(collection(db, "bookings"), {
         ...form,
         createdAt: Timestamp.now(),
       });
+
+      const response = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID!,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID_BOOKING!,
+        {
+          name: form.name,
+          phone: form.phone,
+          brand: form.brand,
+          model: form.vehicle,
+          serviceType: form.serviceType,
+          preferredDate: form.date,
+          message: form.message || "N/A",
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY!
+      );
+
+      console.log("📧 Booking email response:", response);
       setSubmitted(true);
       setForm({
         name: "",
@@ -200,6 +220,8 @@ const Booking = ({ language }: BookingProps) => {
       setSubmitAttempted(false);
     } catch (err) {
       console.error("Error submitting booking:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -615,12 +637,43 @@ const Booking = ({ language }: BookingProps) => {
 
               {/* Submit */}
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: loading ? 1 : 1.05 }}
+                whileTap={{ scale: loading ? 1 : 0.95 }}
                 type="submit"
-                className="md:col-span-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-lg shadow-md transition-transform"
+                disabled={loading}
+                className={`md:col-span-2 flex justify-center items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-lg shadow-md transition-transform ${
+                  loading ? "opacity-90 cursor-not-allowed" : ""
+                }`}
               >
-                {isEn ? "Submit Booking" : "बुकिंग सबमिट करें"}
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span className="text-base font-medium">Sending...</span>
+                  </div>
+                ) : (
+                  <span className="text-base font-medium">
+                    {isEn ? "Submit Booking" : "बुकिंग सबमिट करें"}
+                  </span>
+                )}
               </motion.button>
             </form>
           )}
