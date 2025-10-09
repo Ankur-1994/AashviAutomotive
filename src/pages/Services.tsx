@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { useRef } from "react";
 import { motion } from "framer-motion";
 import SeoHelmet from "../components/SeoHelmet";
@@ -99,11 +97,41 @@ const Services = ({ language }: ServicesProps) => {
   }, [location]);
 
   useEffect(() => {
+    let active = true;
+
     const fetchData = async () => {
-      const docSnap = await getDoc(doc(db, "content", "service_page"));
-      if (docSnap.exists()) setData(docSnap.data() as ServicesContent);
+      try {
+        // ✅ Lazy-load Firestore instance only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
+        const docSnap = await getDoc(doc(db, "content", "service_page"));
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as ServicesContent;
+        setData(data);
+
+        // ✅ Cache the data for instant reloads
+        sessionStorage.setItem("service_page_data", JSON.stringify(data));
+      } catch (err) {
+        console.error("Error fetching service_page data:", err);
+      }
     };
-    fetchData();
+
+    // ✅ Load from cache first (instant UX)
+    const cached = sessionStorage.getItem("service_page_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchData();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!data)

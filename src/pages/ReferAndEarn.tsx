@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion } from "framer-motion";
 import SeoHelmet from "../components/SeoHelmet";
 
@@ -27,15 +25,41 @@ const ReferAndEarn = ({ language }: ReferProps) => {
   const [data, setData] = useState<ReferData | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchData = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "refer_and_earn"));
-        if (snap.exists()) setData(snap.data() as ReferData);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as ReferData;
+        setData(data);
+
+        // ✅ Cache the data for instant reloads
+        sessionStorage.setItem("refer_and_earn_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error loading Refer & Earn:", err);
       }
     };
-    fetchData();
+
+    // ✅ Try cache first for faster load
+    const cached = sessionStorage.getItem("refer_and_earn_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchData();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!data)

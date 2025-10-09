@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import SeoHelmet from "../components/SeoHelmet";
 import { motion } from "framer-motion";
@@ -48,17 +46,44 @@ const PolicyPage: React.FC<PolicyPageProps> = ({ language }) => {
   const activeKey = keyMap[path as keyof typeof keyMap];
 
   useEffect(() => {
+    let active = true;
+
     const fetchPolicy = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "legal_policies"));
-        if (snap.exists()) setPolicy(snap.data() as LegalPolicy);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as LegalPolicy;
+        setPolicy(data);
+
+        // ✅ Cache policy data for faster next loads
+        sessionStorage.setItem("legal_policy_data", JSON.stringify(data));
       } catch (e) {
         console.error("Failed to fetch policy:", e);
       } finally {
         setLoading(false);
       }
     };
-    fetchPolicy();
+
+    // ✅ Try cached data first for instant render
+    const cached = sessionStorage.getItem("legal_policy_data");
+    if (cached) {
+      setPolicy(JSON.parse(cached));
+      setLoading(false);
+    } else {
+      fetchPolicy();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (loading) {

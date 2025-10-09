@@ -1,7 +1,5 @@
 // src/components/BrandShowcaseSection.tsx
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
 import SeoHelmet from "./SeoHelmet";
 
@@ -24,15 +22,41 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
   const [data, setData] = useState<BrandContent | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchBrands = async () => {
       try {
+        // ✅ Lazy-load Firestore instance
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "brands"));
-        if (snap.exists()) setData(snap.data() as BrandContent);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as BrandContent;
+        setData(data);
+
+        // ✅ Optional cache for instant reuse
+        sessionStorage.setItem("brands_data", JSON.stringify(data));
       } catch (e) {
         console.error("Error fetching brands:", e);
       }
     };
-    fetchBrands();
+
+    // ✅ Try cache first
+    const cached = sessionStorage.getItem("brands_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchBrands();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!data || !data.brands?.length) return null;

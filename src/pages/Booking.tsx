@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { doc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaChevronDown, FaRegCalendarAlt } from "react-icons/fa";
 import { DayPicker } from "react-day-picker";
@@ -17,6 +15,7 @@ interface BookingContent {
   form_title_hi: string;
   success_msg_en: string;
   success_msg_hi: string;
+  service_types: string;
 }
 
 interface BookingForm {
@@ -94,21 +93,49 @@ const Booking = ({ language }: BookingProps) => {
 
   // ----- fetch page content -----
   useEffect(() => {
+    let active = true;
+
     const fetchContent = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "bookings"));
-        if (snap.exists()) {
-          const data = snap.data();
-          setContent(data as BookingContent);
-          if (Array.isArray(data.service_types)) {
-            setServiceTypes(data.service_types);
-          }
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as BookingContent;
+        setContent(data);
+
+        if (Array.isArray(data.service_types)) {
+          setServiceTypes(data.service_types);
         }
+
+        // ✅ Cache for fast reloads
+        sessionStorage.setItem("bookings_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error loading booking content:", err);
       }
     };
-    fetchContent();
+
+    // ✅ Try to load from cache first for instant display
+    const cached = sessionStorage.getItem("bookings_data");
+    if (cached) {
+      const data = JSON.parse(cached) as BookingContent;
+      setContent(data);
+      if (Array.isArray(data.service_types)) {
+        setServiceTypes(data.service_types);
+      }
+    } else {
+      fetchContent();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // ----- local (IST-safe) min date string YYYY-MM-DD -----
@@ -176,6 +203,11 @@ const Booking = ({ language }: BookingProps) => {
 
     try {
       setLoading(true);
+      const { getDb } = await import("../services/firebaseLazy");
+      const db = await getDb();
+      const { collection, addDoc, Timestamp } = await import(
+        "firebase/firestore"
+      );
       await addDoc(collection(db, "bookings"), {
         ...form,
         createdAt: Timestamp.now(),

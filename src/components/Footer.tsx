@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -46,15 +44,41 @@ const Footer = ({ language }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
+    let active = true;
+
     const fetchMeta = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "site_meta"));
-        if (snap.exists()) setMeta(snap.data() as SiteMeta);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as SiteMeta;
+        setMeta(data);
+
+        // ✅ Cache for faster subsequent loads
+        sessionStorage.setItem("site_meta_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error loading footer meta:", err);
       }
     };
-    fetchMeta();
+
+    // ✅ Use cached data if available
+    const cached = sessionStorage.getItem("site_meta_data");
+    if (cached) {
+      setMeta(JSON.parse(cached));
+    } else {
+      fetchMeta();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!meta) return null;

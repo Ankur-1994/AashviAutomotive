@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion } from "framer-motion";
 import {
   FaWhatsapp,
@@ -34,18 +32,43 @@ const ContactSection = ({ language }: ContactSectionProps) => {
   const [contact, setContact] = useState<ContactData | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchContact = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docRef = doc(db, "content", "contact");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setContact(docSnap.data() as ContactData);
-        }
+
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as ContactData;
+        setContact(data);
+
+        // ✅ Cache for faster next load
+        sessionStorage.setItem("contact_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error fetching contact info:", err);
       }
     };
-    fetchContact();
+
+    // ✅ Use cached data if present
+    const cached = sessionStorage.getItem("contact_data");
+    if (cached) {
+      setContact(JSON.parse(cached));
+    } else {
+      fetchContact();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!contact) return null;

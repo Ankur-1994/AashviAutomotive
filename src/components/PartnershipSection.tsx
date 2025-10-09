@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion } from "framer-motion";
 
 interface PartnershipData {
@@ -30,15 +28,41 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
   const [data, setData] = useState<PartnershipData | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchData = async () => {
       try {
+        // ✅ Lazy-load Firestore instance
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore functions
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "partnership"));
-        if (snap.exists()) setData(snap.data() as PartnershipData);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as PartnershipData;
+        setData(data);
+
+        // ✅ Cache for instant subsequent loads
+        sessionStorage.setItem("partnership_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error fetching partnership data:", err);
       }
     };
-    fetchData();
+
+    // ✅ Load from cache first for faster render
+    const cached = sessionStorage.getItem("partnership_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchData();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!data) return null;

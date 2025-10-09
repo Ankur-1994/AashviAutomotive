@@ -1,7 +1,5 @@
 // src/components/AboutSection.tsx
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaMotorcycle, FaTools, FaHome, FaStar } from "react-icons/fa";
@@ -29,18 +27,43 @@ const AboutSection = ({ language }: AboutSectionProps) => {
   const [about, setAbout] = useState<AboutData | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchAbout = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docRef = doc(db, "content", "about");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setAbout(docSnap.data() as AboutData);
-        }
+
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as AboutData;
+        setAbout(data);
+
+        // ✅ Optional: cache for faster revisit
+        sessionStorage.setItem("about_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error fetching about data:", err);
       }
     };
-    fetchAbout();
+
+    // ✅ Check cache first to avoid refetch
+    const cached = sessionStorage.getItem("about_data");
+    if (cached) {
+      setAbout(JSON.parse(cached));
+    } else {
+      fetchAbout();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const { scrollY } = useScroll();

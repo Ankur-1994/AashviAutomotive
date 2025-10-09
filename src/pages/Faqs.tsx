@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown } from "react-icons/fa";
 import SeoHelmet from "../components/SeoHelmet";
@@ -23,21 +21,49 @@ const Faqs: React.FC<FaqsProps> = ({ language }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let active = true;
+
     const fetchFaqs = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const ref = doc(db, "content", "faqs");
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const lists = (snap.data()?.lists || []) as FaqItem[];
-          setFaqs([...lists].sort((a, b) => a.order - b.order));
-        }
+
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data();
+        const lists = (data?.lists || []) as FaqItem[];
+
+        const sortedFaqs = [...lists].sort((a, b) => a.order - b.order);
+        setFaqs(sortedFaqs);
+
+        // ✅ Cache FAQs in sessionStorage for instant reloads
+        sessionStorage.setItem("faqs_data", JSON.stringify(sortedFaqs));
       } catch (e) {
-        console.error("Error loading FAQs", e);
+        console.error("Error loading FAQs:", e);
       } finally {
         setLoading(false);
       }
     };
-    fetchFaqs();
+
+    // ✅ Try to load from cache first for instant display
+    const cached = sessionStorage.getItem("faqs_data");
+    if (cached) {
+      setFaqs(JSON.parse(cached));
+      setLoading(false);
+    } else {
+      fetchFaqs();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (loading) {

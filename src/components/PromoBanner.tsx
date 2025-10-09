@@ -1,7 +1,4 @@
-// src/components/PromoBanner.tsx
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
@@ -29,24 +26,48 @@ const PromoBanner = ({ language }: PromoBannerProps) => {
 
   // ✅ Fetch promos from Firebase
   useEffect(() => {
+    let active = true;
+
     const fetchPromos = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docRef = doc(db, "content", "promos");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (Array.isArray(data.banners)) {
-            const activePromos = data.banners.filter(
-              (b: PromoData) => b.active !== false
-            );
-            setPromos(activePromos);
-          }
+
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data();
+        if (Array.isArray(data.banners)) {
+          const activePromos = data.banners.filter(
+            (b: PromoData) => b.active !== false
+          );
+          setPromos(activePromos);
+
+          // ✅ Cache for quick future loads
+          sessionStorage.setItem("promos_data", JSON.stringify(activePromos));
         }
       } catch (error) {
         console.error("Error fetching promo banners:", error);
       }
     };
-    fetchPromos();
+
+    // ✅ Try to load from cache first
+    const cached = sessionStorage.getItem("promos_data");
+    if (cached) {
+      setPromos(JSON.parse(cached));
+    } else {
+      fetchPromos();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // ✅ Auto-rotate promos + progress bar

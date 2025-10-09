@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaWhatsapp, FaBars, FaTimes } from "react-icons/fa";
 import { HiOutlineGlobeAlt } from "react-icons/hi2";
-import { db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
 
 interface LinkItem {
   label_en: string;
@@ -31,24 +29,51 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  // ✅ Fetch navigation data
+  // ✅ Fetch navigation data (optimized lazy Firebase load)
   useEffect(() => {
+    let active = true;
+
     const fetchNavData = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docRef = doc(db, "content", "navigation");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data() as NavigationData;
-          data.links = data.links
-            .filter((link) => link.show)
-            .sort((a, b) => a.order - b.order);
-          setNavData(data);
-        }
+
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as NavigationData;
+
+        // ✅ Clean & sort links
+        data.links = data.links
+          .filter((link) => link.show)
+          .sort((a, b) => a.order - b.order);
+
+        setNavData(data);
+
+        // ✅ Optional: Cache for instant reuse
+        sessionStorage.setItem("navigation_data", JSON.stringify(data));
       } catch (err) {
         console.error("Failed to fetch navigation:", err);
       }
     };
-    fetchNavData();
+
+    // ✅ Try cache first
+    const cached = sessionStorage.getItem("navigation_data");
+    if (cached) {
+      setNavData(JSON.parse(cached));
+    } else {
+      fetchNavData();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // ✅ Track scroll

@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import SeoHelmet from "../components/SeoHelmet";
@@ -29,15 +27,41 @@ const About = ({ language }: AboutProps) => {
   const [about, setAbout] = useState<AboutContent | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchAbout = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docSnap = await getDoc(doc(db, "content", "about"));
-        if (docSnap.exists()) setAbout(docSnap.data() as AboutContent);
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as AboutContent;
+        setAbout(data);
+
+        // ✅ Cache data for instant subsequent loads
+        sessionStorage.setItem("about_data", JSON.stringify(data));
       } catch (error) {
         console.error("Error loading about content:", error);
       }
     };
-    fetchAbout();
+
+    // ✅ Try cached data first for faster paint
+    const cached = sessionStorage.getItem("about_data");
+    if (cached) {
+      setAbout(JSON.parse(cached));
+    } else {
+      fetchAbout();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!about)

@@ -1,7 +1,4 @@
-// src/components/TestimonialsSection.tsx
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar } from "react-icons/fa";
 
@@ -30,15 +27,41 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
 
   // 🔹 Fetch from Firebase
   useEffect(() => {
+    let active = true;
+
     const fetchTestimonials = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore instance
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const snap = await getDoc(doc(db, "content", "testimonials"));
-        if (snap.exists()) setData(snap.data() as TestimonialsContent);
+        if (!active || !snap.exists()) return;
+
+        const data = snap.data() as TestimonialsContent;
+        setData(data);
+
+        // ✅ Cache for faster subsequent loads
+        sessionStorage.setItem("testimonials_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error fetching testimonials:", err);
       }
     };
-    fetchTestimonials();
+
+    // ✅ Use cached data first (instant paint)
+    const cached = sessionStorage.getItem("testimonials_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchTestimonials();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // 🔹 Auto slide

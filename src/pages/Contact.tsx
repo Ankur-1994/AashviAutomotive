@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc, collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import {
@@ -42,16 +40,43 @@ const Contact = ({ language }: ContactProps) => {
   >("idle");
 
   useEffect(() => {
+    let active = true;
+
     const fetchContactData = async () => {
       try {
+        // ✅ Lazy-load Firestore only when needed
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const docRef = doc(db, "content", "contact");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) setContactData(docSnap.data() as ContactContent);
+
+        if (!active || !docSnap.exists()) return;
+
+        const data = docSnap.data() as ContactContent;
+        setContactData(data);
+
+        // ✅ Cache in sessionStorage for fast reloads
+        sessionStorage.setItem("contact_data", JSON.stringify(data));
       } catch (err) {
         console.error("Error fetching contact data:", err);
       }
     };
-    fetchContactData();
+
+    // ✅ Try cache first for instant page load
+    const cached = sessionStorage.getItem("contact_data");
+    if (cached) {
+      setContactData(JSON.parse(cached));
+    } else {
+      fetchContactData();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,6 +84,11 @@ const Contact = ({ language }: ContactProps) => {
     if (!form.name || !form.phone || !form.message) return;
     try {
       setStatus("sending");
+      const { getDb } = await import("../services/firebaseLazy");
+      const db = await getDb();
+      const { collection, addDoc, Timestamp } = await import(
+        "firebase/firestore"
+      );
       await addDoc(collection(db, "contact_requests"), {
         ...form,
         createdAt: Timestamp.now(),

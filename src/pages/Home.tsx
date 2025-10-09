@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+// import { doc, getDoc } from "firebase/firestore";
+// import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import ServicesSection from "../components/ServicesSection";
 import PromoBanner from "../components/PromoBanner";
@@ -32,23 +32,41 @@ const Home = ({ language }: HomeProps) => {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [current, setCurrent] = useState(0);
 
-  // Fetch hero slides from Firestore
+  // Fetch hero slides from Firestore (optimized lazy-load)
   useEffect(() => {
+    let active = true;
+
     const fetchSlides = async () => {
-      const docRef = doc(db, "content", "home_hero");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
+      try {
+        // ✅ Lazy-load Firestore and get db
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy-load Firestore functions (only when needed)
+        const { doc, getDoc } = await import("firebase/firestore");
+
+        const docRef = doc(db, "content", "home_hero");
+        const docSnap = await getDoc(docRef);
+
+        if (!active || !docSnap.exists()) return;
+
         const data = docSnap.data();
         if (Array.isArray(data.slides)) {
-          // ✅ Sort client-side by order field
           const orderedSlides = [...data.slides].sort(
             (a: Slide, b: Slide) => a.order - b.order
           );
           setSlides(orderedSlides);
         }
+      } catch (err) {
+        console.error("Failed to fetch hero slides:", err);
       }
     };
+
     fetchSlides();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -65,8 +83,6 @@ const Home = ({ language }: HomeProps) => {
     return <div className="text-center py-20">Loading...</div>;
 
   const slide = slides[current];
-
-  console.log("slide.image", slide.image);
 
   return (
     <div className="relative font-sans text-white">

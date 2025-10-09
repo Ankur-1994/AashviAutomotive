@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import SeoHelmet from "./SeoHelmet";
@@ -36,22 +34,49 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchServices = async () => {
       try {
+        // ✅ Lazy-load Firebase Firestore instance
+        const { getDb } = await import("../services/firebaseLazy");
+        const db = await getDb();
+
+        // ✅ Lazy import Firestore methods
+        const { doc, getDoc } = await import("firebase/firestore");
+
         const ref = doc(db, "content", "services");
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const docData = snap.data() as ServicesDoc;
-          setData({
-            ...docData,
-            items: Array.isArray(docData.items) ? docData.items : [],
-          });
-        }
+
+        if (!active || !snap.exists()) return;
+
+        const docData = snap.data() as ServicesDoc;
+
+        const formattedData = {
+          ...docData,
+          items: Array.isArray(docData.items) ? docData.items : [],
+        };
+
+        setData(formattedData);
+
+        // ✅ Cache to sessionStorage for instant reloads
+        sessionStorage.setItem("services_data", JSON.stringify(formattedData));
       } catch (e) {
         console.error("Error fetching services:", e);
       }
     };
-    fetchServices();
+
+    // ✅ Try cache first for faster first paint
+    const cached = sessionStorage.getItem("services_data");
+    if (cached) {
+      setData(JSON.parse(cached));
+    } else {
+      fetchServices();
+    }
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   if (!data) return null;
