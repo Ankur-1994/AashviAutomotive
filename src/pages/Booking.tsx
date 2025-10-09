@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { doc, getDoc, addDoc, collection, Timestamp } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { Helmet } from "react-helmet";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaChevronDown, FaRegCalendarAlt } from "react-icons/fa";
 import { DayPicker } from "react-day-picker";
@@ -232,22 +231,6 @@ const Booking = ({ language }: BookingProps) => {
 
   return (
     <div className="font-sans text-gray-900">
-      <Helmet>
-        <title>
-          {isEn
-            ? "Book Service | Aashvi Automotive"
-            : "सर्विस बुक करें | आश्वी ऑटोमोटिव"}
-        </title>
-        <meta
-          name="description"
-          content={
-            isEn
-              ? "Book your bike or scooter service online with Aashvi Automotive in Rajnagar, Madhubani — trusted multibrand two-wheeler workshop."
-              : "राजनगर, मधुबनी में आश्वी ऑटोमोटिव पर अपनी बाइक या स्कूटर सर्विस ऑनलाइन बुक करें — भरोसेमंद मल्टीब्रांड टू-व्हीलर वर्कशॉप।"
-          }
-        />
-      </Helmet>
-
       <SeoHelmet
         pageKey="booking"
         language={language}

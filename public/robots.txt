@@ -1,10 +1,29 @@
-# Allow all search engines
+# ✅ Allow all major crawlers
 User-agent: *
 Allow: /
 
-# Disallow private or admin paths (optional)
+# 🛑 Disallow sensitive or system paths
 Disallow: /admin/
 Disallow: /api/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /_next/
 
-# Sitemap location
+# 🧭 Sitemap reference
 Sitemap: https://aashviautomotive.in/sitemap.xml
+
+# 🧠 Crawl-delay
+# Crawl-delay: 5
+
+# 👇 Specific crawler notes (optional, but professional)
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /assets/
+
+User-agent: AdsBot-Google
+Allow: /
+
+# 🔍 Language hints
+User-agent: *
+# Default (English)
+Disallow: /hi/

@@ -1,20 +1,22 @@
 {
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "compilerOptions": {
-    "target": "ES2020",
+    "composite": true,
+
+    /* Shared sensible defaults */
+    "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
     "strict": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "baseUrl": "./src",
-    "paths": {
-      "*": ["*", "../node_modules/*"]
-    }
-  },
-  "include": ["src"]
+    "jsx": "react-jsx"
+  }
 }

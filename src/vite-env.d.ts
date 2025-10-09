@@ -1,4 +1,7 @@
 /// <reference types="vite/client" />
+declare module "@vitejs/plugin-react-swc";
+declare module "rollup-plugin-visualizer";
+declare module "vite-plugin-compression";
 
 interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY: string;

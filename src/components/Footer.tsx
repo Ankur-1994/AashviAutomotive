@@ -10,6 +10,10 @@ import {
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaEnvelope,
+  FaGavel,
+  FaShieldAlt,
+  FaUndoAlt,
+  FaSitemap,
 } from "react-icons/fa";
 
 interface FooterProps {
@@ -38,6 +42,8 @@ interface SiteMeta {
 
 const Footer = ({ language }: FooterProps) => {
   const [meta, setMeta] = useState<SiteMeta | null>(null);
+  const isEn = language === "en";
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const fetchMeta = async () => {
@@ -53,17 +59,14 @@ const Footer = ({ language }: FooterProps) => {
 
   if (!meta) return null;
 
-  const isEn = language === "en";
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="relative bg-gradient-to-b from-[#0B3B74] via-[#0B3B74]/90 to-black text-gray-200 py-14 px-6 md:px-20 mt-10 overflow-hidden">
-      {/* Subtle glows */}
+      {/* Gradient glows */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/10 rounded-full blur-3xl"></div>
 
-      {/* Footer grid */}
-      <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 relative z-10">
+      {/* Grid layout */}
+      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 relative z-10">
         {/* --- Column 1: About --- */}
         <div>
           <div className="flex items-center gap-3 mb-4">
@@ -72,7 +75,7 @@ const Footer = ({ language }: FooterProps) => {
               alt={isEn ? meta.name_en : meta.name_hi}
               className="h-12 w-12 object-contain rounded-md"
             />
-            <h3 className="text-xl tracking-wide">
+            <h3 className="text-xl tracking-wide font-semibold">
               <span className="text-orange-400">
                 {isEn ? meta.name_en.split(" ")[0] : meta.name_hi.split(" ")[0]}
               </span>{" "}
@@ -95,55 +98,66 @@ const Footer = ({ language }: FooterProps) => {
             {isEn ? "Quick Links" : "त्वरित लिंक"}
           </h3>
           <ul className="space-y-2 text-sm">
-            <li>
-              <Link to="/" className="hover:text-orange-400 transition-colors">
-                {isEn ? "Home" : "मुखपृष्ठ"}
+            {[
+              { to: "/", label: "Home", hi: "मुखपृष्ठ" },
+              { to: "/about", label: "About Us", hi: "हमारे बारे में" },
+              { to: "/services", label: "Services", hi: "सेवाएं" },
+              { to: "/booking", label: "Booking", hi: "बुकिंग" },
+              { to: "/contact", label: "Contact", hi: "संपर्क करें" },
+              { to: "/faqs", label: "FAQs", hi: "अक्सर पूछे जाने वाले सवाल" },
+              { to: "/refer", label: "Refer & Earn", hi: "रेफर करें और कमाएं" },
+            ].map((link) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="hover:text-orange-400 transition-colors"
+                >
+                  {isEn ? link.label : link.hi}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* --- Column 3: Legal Links --- */}
+        <div>
+          <h3 className="text-lg font-semibold text-orange-400 mb-3">
+            {isEn ? "Legal & Policies" : "कानूनी और नीतियाँ"}
+          </h3>
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center gap-2">
+              <FaGavel className="text-orange-400" />
+              <Link to="/terms" className="hover:text-orange-400">
+                {isEn ? "Terms & Conditions" : "नियम व शर्तें"}
               </Link>
             </li>
-            <li>
-              <Link
-                to="/about"
-                className="hover:text-orange-400 transition-colors"
-              >
-                {isEn ? "About Us" : "हमारे बारे में"}
+            <li className="flex items-center gap-2">
+              <FaShieldAlt className="text-orange-400" />
+              <Link to="/privacy" className="hover:text-orange-400">
+                {isEn ? "Privacy Policy" : "गोपनीयता नीति"}
               </Link>
             </li>
-            <li>
-              <Link
-                to="/booking"
-                className="hover:text-orange-400 transition-colors"
-              >
-                {isEn ? "Booking" : "बुकिंग"}
+            <li className="flex items-center gap-2">
+              <FaUndoAlt className="text-orange-400" />
+              <Link to="/refunds" className="hover:text-orange-400">
+                {isEn ? "Refund & Cancellation" : "रिफंड और रद्दीकरण नीति"}
               </Link>
             </li>
-            <li>
-              <Link
-                to="/services"
-                className="hover:text-orange-400 transition-colors"
+            <li className="flex items-center gap-2">
+              <FaSitemap className="text-orange-400" />
+              <a
+                href="/sitemap.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-orange-400"
               >
-                {isEn ? "Service" : "सेवाएं"}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/refer"
-                className="hover:text-orange-400 transition-colors"
-              >
-                {isEn ? "Refer And Earn" : "रेफर करें और कमाएँ"}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/contact"
-                className="hover:text-orange-400 transition-colors"
-              >
-                {isEn ? "Contact" : "संपर्क करें"}
-              </Link>
+                {isEn ? "Sitemap" : "साइटमैप"}
+              </a>
             </li>
           </ul>
         </div>
 
-        {/* --- Column 3: Contact --- */}
+        {/* --- Column 4: Contact Info --- */}
         <div>
           <h3 className="text-lg font-semibold text-orange-400 mb-3">
             {isEn ? "Reach Us" : "हमसे संपर्क करें"}
@@ -151,9 +165,7 @@ const Footer = ({ language }: FooterProps) => {
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-3">
               <FaMapMarkerAlt className="text-orange-400 mt-1" />
-              <span>
-                {language === "en" ? meta.address_en : meta.address_hi}
-              </span>
+              <span>{isEn ? meta.address_en : meta.address_hi}</span>
             </li>
             <li className="flex items-center gap-3">
               <FaPhoneAlt className="text-orange-400" />
@@ -222,10 +234,15 @@ const Footer = ({ language }: FooterProps) => {
         </div>
       </div>
 
-      {/* --- Bottom Copyright --- */}
+      {/* Bottom bar */}
       <div className="mt-12 border-t border-gray-700 pt-4 text-center text-xs text-gray-400 relative z-10">
         © {currentYear} {isEn ? meta.name_en : meta.name_hi}.{" "}
-        {isEn ? "All Rights Reserved." : "सर्वाधिकार सुरक्षित।"}
+        {isEn ? "All Rights Reserved." : "सर्वाधिकार सुरक्षित।"} <br />
+        <span className="text-[11px] text-gray-500">
+          {isEn
+            ? "Authorized Franchise Partner — Service Force India"
+            : "अधिकृत फ्रेंचाइज़ पार्टनर — सर्विस फोर्स इंडिया"}
+        </span>
       </div>
     </footer>
   );

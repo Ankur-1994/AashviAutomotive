@@ -17,58 +17,79 @@
       href="https://aashviautomotive.web.app/hi/"
     />
 
-    <!-- ✅ Default title & description (React will override dynamically) -->
+    <!-- ✅ Default title & description (React overrides later) -->
     <title>Aashvi Automotive — Trusted Multibrand Two-Wheeler Workshop</title>
+    <meta
+      name="description"
+      content="Aashvi Automotive offers expert servicing, repair, and maintenance for all two-wheeler brands in Rajnagar, Madhubani. Trusted workshop for bikes and scooters."
+    />
 
-    <!-- ✅ Theme color -->
+    <!-- ✅ Theme & app icons -->
     <meta name="theme-color" content="#0B3B74" />
-
-    <!-- ✅ Favicon & PWA -->
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- ✅ Fonts -->
+    <!-- ✅ Preconnect (fonts + CDN + Firebase) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preconnect"
+      href="https://firebasestorage.googleapis.com"
+      crossorigin
+    />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- ✅ Preload font (critical path) -->
+    <link
+      rel="preload"
+      as="font"
+      href="https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrFJDUc1NECPY.woff2"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- ✅ Load fonts non-blocking -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
 
-    <!-- ✅ Preload hero image for faster LCP -->
     <link
       rel="preload"
       as="image"
       href="https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
     />
 
-    <!-- ✅ Analytics / Chat (async load only) -->
-    <script type="text/javascript">
-      var Tawk_API = Tawk_API || {},
-        Tawk_LoadStart = new Date();
-      (function () {
-        var s1 = document.createElement("script"),
-          s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = "https://embed.tawk.to/68e405ca2c740119528ea05b/1j6tbd8k1";
-        s1.charset = "UTF-8";
-        s1.setAttribute("crossorigin", "*");
-        s0.parentNode.insertBefore(s1, s0);
-      })();
+    <!-- ✅ Lazy-load chat + analytics AFTER interaction -->
+    <script>
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          var s1 = document.createElement("script"),
+            s0 = document.getElementsByTagName("script")[0];
+          s1.src = "https://embed.tawk.to/68e405ca2c740119528ea05b/1j6tbd8k1";
+          s1.async = true;
+          s1.charset = "UTF-8";
+          s1.crossOrigin = "anonymous";
+          s0.parentNode.insertBefore(s1, s0);
+        }, 4000);
+      });
     </script>
+
+    <!-- ✅ Defer non-critical scripts -->
+    <script defer type="module" src="/src/main.tsx"></script>
   </head>
 
   <body>
     <noscript>
       <strong
-        >JavaScript is required to run this app. Please enable JavaScript in
-        your browser.</strong
+        >JavaScript is required to run this app. Please enable it in your
+        browser.</strong
       >
     </noscript>
 
     <div id="root"></div>
-
-    <!-- ✅ Vite entry -->
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

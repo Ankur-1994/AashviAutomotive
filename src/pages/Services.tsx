@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useRef } from "react";
-import { useInView, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import SeoHelmet from "../components/SeoHelmet";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
 import {
   Bike,
   Wrench,
@@ -41,12 +42,10 @@ interface ServicesProps {
 }
 
 const Services = ({ language }: ServicesProps) => {
+  const location = useLocation();
   const [data, setData] = useState<ServicesContent | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
-  const isCtaInView = useInView(ctaRef, {
-    amount: 0.2,
-    margin: "0px 0px -200px 0px",
-  });
+  const [isCtaVisible, setIsCtaVisible] = useState(false);
 
   const IconFor = (key: string) => {
     const base = "w-10 h-10 transition-colors duration-300";
@@ -83,6 +82,21 @@ const Services = ({ language }: ServicesProps) => {
         return <Wrench className={base} />;
     }
   };
+
+  useEffect(() => {
+    // Re-trigger inView logic on route change
+    if (ctaRef.current) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          setIsCtaVisible(entry.isIntersecting);
+        },
+        { threshold: 0.3 }
+      );
+
+      observer.observe(ctaRef.current);
+      return () => observer.disconnect();
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -204,9 +218,9 @@ const Services = ({ language }: ServicesProps) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: 20 }}
         animate={{
-          opacity: isCtaInView ? 0 : 1,
-          scale: isCtaInView ? 0.8 : 1,
-          y: isCtaInView ? 20 : 0,
+          opacity: isCtaVisible ? 0 : 1,
+          scale: isCtaVisible ? 0.8 : 1,
+          y: isCtaVisible ? 20 : 0,
         }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="fixed bottom-6 left-6 z-50"

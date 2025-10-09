@@ -17,3 +17,28 @@
 .animate-gradientMove {
   animation: gradientMove 12s ease-in-out infinite;
 }
+
+/* Policy Page Custom Heading Decoration */
+.prose h2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.prose h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(to right, #f97316, #ea580c);
+  border-radius: 2px;
+  transition: width 0.6s ease-in-out;
+}
+
+/* Animate underline when h2 enters view */
+.prose h2.in-view::after {
+  width: 60%;
+}

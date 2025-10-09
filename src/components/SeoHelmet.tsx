@@ -1,5 +1,4 @@
-// src/components/SeoHelmet.tsx
-import { Title, Meta, Link as HeadLink } from "react-head";
+import { Helmet } from "react-helmet-async";
 import { useSeoMeta } from "../hooks/useSeoHelmet";
 
 interface SeoHelmetProps {
@@ -22,7 +21,6 @@ const SeoHelmet = ({
   schema,
 }: SeoHelmetProps) => {
   const meta = useSeoMeta();
-
   if (!meta) return null;
 
   const siteTitle = language === "en" ? meta.siteTitle_en : meta.siteTitle_hi;
@@ -42,42 +40,44 @@ const SeoHelmet = ({
       : "https://aashviautomotive.web.app/");
 
   return (
-    <>
-      <Title key="title">{fullTitle}</Title>
-      <Meta key="description" name="description" content={desc} />
-      <Meta key="keywords" name="keywords" content={keywords} />
-      <HeadLink key="canonical-link" rel="canonical" href={canonicalUrl} />
+    <Helmet>
+      {/* Basic Meta */}
+      <title key="title">{fullTitle}</title>
+      <meta key="description" name="description" content={desc} />
+      <meta key="keywords" name="keywords" content={keywords} />
+      <link key="canonical" rel="canonical" href={canonicalUrl} />
 
-      {/* Open Graph */}
-      <Meta key="og-type" property="og:type" content="website" />
-      <Meta key="og-title" property="og:title" content={fullTitle} />
-      <Meta key="og-description" property="og:description" content={desc} />
-      <Meta key="og-image" property="og:image" content={ogImage} />
-      <Meta key="og-url" property="og:url" content={canonicalUrl} />
-      <Meta key="og-site_name" property="og:site_name" content={siteTitle} />
+      {/* Open Graph Meta */}
+      <meta key="og:type" property="og:type" content="website" />
+      <meta key="og:title" property="og:title" content={fullTitle} />
+      <meta key="og:description" property="og:description" content={desc} />
+      <meta key="og:image" property="og:image" content={ogImage} />
+      <meta key="og:url" property="og:url" content={canonicalUrl} />
+      <meta key="og:site_name" property="og:site_name" content={siteTitle} />
 
-      {/* Twitter Card */}
-      <Meta
-        key="twitter-card"
+      {/* Twitter Meta */}
+      <meta
+        key="twitter:card"
         name="twitter:card"
         content="summary_large_image"
       />
-      <Meta key="twitter-title" name="twitter:title" content={fullTitle} />
-      <Meta
-        key="twitter-description"
+      <meta key="twitter:title" name="twitter:title" content={fullTitle} />
+      <meta
+        key="twitter:description"
         name="twitter:description"
         content={desc}
       />
-      <Meta key="twitter-image" name="twitter:image" content={ogImage} />
+      <meta key="twitter:image" name="twitter:image" content={ogImage} />
 
-      {/* Schema.org structured data */}
+      {/* Structured Data */}
       {schema && (
         <script
+          key="ld-json-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       )}
-    </>
+    </Helmet>
   );
 };
 
