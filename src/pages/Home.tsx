@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-// import { doc, getDoc } from "firebase/firestore";
-// import { db } from "../services/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import ServicesSection from "../components/ServicesSection";
 import PromoBanner from "../components/PromoBanner";
@@ -32,24 +30,17 @@ const Home = ({ language }: HomeProps) => {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [current, setCurrent] = useState(0);
 
-  // Fetch hero slides from Firestore (optimized lazy-load)
   useEffect(() => {
     let active = true;
 
     const fetchSlides = async () => {
       try {
-        // ✅ Lazy-load Firestore and get db
         const { getDb } = await import("../services/firebaseLazy");
         const db = await getDb();
-
-        // ✅ Lazy-load Firestore functions (only when needed)
         const { doc, getDoc } = await import("firebase/firestore");
-
         const docRef = doc(db, "content", "home_hero");
         const docSnap = await getDoc(docRef);
-
         if (!active || !docSnap.exists()) return;
-
         const data = docSnap.data();
         if (Array.isArray(data.slides)) {
           const orderedSlides = [...data.slides].sort(
@@ -63,7 +54,6 @@ const Home = ({ language }: HomeProps) => {
     };
 
     fetchSlides();
-
     return () => {
       active = false;
     };
@@ -117,9 +107,9 @@ const Home = ({ language }: HomeProps) => {
         }}
       />
 
-      {/* ✅ HERO SECTION */}
-      <div className="relative h-[100vh] overflow-hidden text-white font-sans">
-        {/* 🔹 Background image layer */}
+      {/* ✅ HERO SECTION — Visually Centered and Navbar-Safe */}
+      <div className="relative w-full overflow-hidden text-white font-sans">
+        {/* 🔹 Background image */}
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -137,7 +127,7 @@ const Home = ({ language }: HomeProps) => {
               fetchPriority={current === 0 ? "high" : "auto"}
               loading={current === 0 ? "eager" : "lazy"}
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover object-center"
             />
           </motion.div>
         </AnimatePresence>
@@ -145,55 +135,61 @@ const Home = ({ language }: HomeProps) => {
         {/* 🔹 Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80 z-10"></div>
 
-        {/* 🔹 Text + CTA overlay */}
+        {/* 🔹 Text + CTA Container */}
         <motion.div
           key={language + current}
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="relative z-20 flex flex-col justify-center items-center text-center px-6 md:px-20 h-full"
+          className="relative z-20 flex flex-col justify-center items-center text-center px-6 sm:px-8 md:px-12"
+          style={{
+            minHeight: "calc(100vh - var(--navbar-height, 80px))",
+            paddingTop: "var(--navbar-height, 80px)",
+          }}
         >
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-lg text-orange-400">
-            {language === "en" ? slide.title_en : slide.title_hi}
-          </h1>
+          <div className="flex flex-col items-center justify-center max-w-5xl mx-auto py-8 sm:py-10 md:py-12 lg:py-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight drop-shadow-lg text-orange-400">
+              {language === "en" ? slide.title_en : slide.title_hi}
+            </h1>
 
-          <p className="text-lg md:text-2xl max-w-3xl mb-8 text-gray-100 drop-shadow">
-            {language === "en" ? slide.desc_en : slide.desc_hi}
-          </p>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl max-w-2xl md:max-w-3xl mb-6 sm:mb-8 text-gray-100 drop-shadow leading-relaxed px-2">
+              {language === "en" ? slide.desc_en : slide.desc_hi}
+            </p>
 
-          {slide.cta_link && (
-            <>
-              {slide.external ? (
-                <a
-                  href={slide.cta_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-transform duration-300 hover:scale-105"
-                >
-                  {language === "en"
-                    ? slide.cta_text.split("/")[0].trim()
-                    : slide.cta_text.split("/")[1].trim()}
-                </a>
-              ) : (
-                <Link
-                  to={slide.cta_link}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-transform duration-300 hover:scale-105"
-                >
-                  {language === "en"
-                    ? slide.cta_text.split("/")[0].trim()
-                    : slide.cta_text.split("/")[1].trim()}
-                </Link>
-              )}
-            </>
-          )}
+            {slide.cta_link && (
+              <div className="flex justify-center flex-wrap gap-3 sm:gap-4">
+                {slide.external ? (
+                  <a
+                    href={slide.cta_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg transition-transform duration-300 hover:scale-105"
+                  >
+                    {language === "en"
+                      ? slide.cta_text.split("/")[0].trim()
+                      : slide.cta_text.split("/")[1].trim()}
+                  </a>
+                ) : (
+                  <Link
+                    to={slide.cta_link}
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg transition-transform duration-300 hover:scale-105"
+                  >
+                    {language === "en"
+                      ? slide.cta_text.split("/")[0].trim()
+                      : slide.cta_text.split("/")[1].trim()}
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
         </motion.div>
 
-        {/* 🔹 Dots (carousel indicators) */}
+        {/* 🔹 Dots */}
         <div className="absolute bottom-6 w-full flex justify-center space-x-2 z-30">
           {slides.map((_, index) => (
             <div
               key={index}
-              className={`w-3 h-3 rounded-full transition-all cursor-pointer ${
+              className={`w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full transition-all cursor-pointer ${
                 index === current
                   ? "bg-orange-500 scale-125"
                   : "bg-white/50 hover:bg-white/80"
@@ -204,6 +200,7 @@ const Home = ({ language }: HomeProps) => {
         </div>
       </div>
 
+      {/* ✅ SECTIONS */}
       <PartnershipSection language={language} />
       <ServicesSection language={language} />
       <BrandShowcaseSection language={language} />

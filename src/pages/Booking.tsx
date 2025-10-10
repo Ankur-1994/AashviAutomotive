@@ -287,31 +287,36 @@ const Booking = ({ language }: BookingProps) => {
         }}
       />
 
-      {/* hero */}
+      {/* ✅ HERO SECTION */}
       <section
-        className="relative min-h-[60vh] flex flex-col justify-center items-center text-center text-white bg-cover bg-center"
-        style={{ backgroundImage: `url(${content.hero_image})` }}
+        className="relative flex flex-col justify-center items-center text-center text-white bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${content.hero_image})`,
+          minHeight: "calc(100vh - var(--navbar-height, 80px))",
+        }}
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 px-6"
+          className="relative z-10 px-6 sm:px-10 md:px-16"
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight text-orange-400 drop-shadow-md">
             {isEn ? content.hero_title_en : content.hero_title_hi}
           </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-200">
+
+          <p className="text-base sm:text-lg md:text-xl max-w-2xl md:max-w-3xl mx-auto text-gray-200 leading-relaxed">
             {isEn ? content.hero_desc_en : content.hero_desc_hi}
           </p>
         </motion.div>
       </section>
 
-      {/* form */}
-      <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-white via-[#FDF5EF] to-white">
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-[#0B3B74] mb-6 text-center">
+      {/* ✅ FORM SECTION */}
+      <section className="py-16 sm:py-20 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white via-[#FDF5EF] to-white">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8 md:p-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#0B3B74] mb-6 text-center leading-snug">
             {isEn ? content.form_title_en : content.form_title_hi}
           </h2>
 
@@ -319,14 +324,14 @@ const Booking = ({ language }: BookingProps) => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-green-600 text-lg font-medium"
+              className="text-center text-green-600 text-lg font-medium py-8"
             >
               {isEn ? content.success_msg_en : content.success_msg_hi}
             </motion.p>
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="grid md:grid-cols-2 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
               noValidate
             >
               {/* Name */}
@@ -380,7 +385,7 @@ const Booking = ({ language }: BookingProps) => {
                 )}
               </div>
 
-              {/* Brand FIRST */}
+              {/* Brand */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {isEn ? "Brand" : "ब्रांड"}
@@ -407,7 +412,7 @@ const Booking = ({ language }: BookingProps) => {
                 )}
               </div>
 
-              {/* Vehicle Model SECOND */}
+              {/* Vehicle */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {isEn ? "Vehicle Model" : "वाहन मॉडल"}
@@ -449,7 +454,6 @@ const Booking = ({ language }: BookingProps) => {
                     className={`${
                       form.serviceType ? "text-gray-800" : "text-gray-500"
                     } text-base font-normal tracking-wide`}
-                    style={{ fontFamily: "inherit" }}
                   >
                     {form.serviceType
                       ? form.serviceType
@@ -494,7 +498,6 @@ const Booking = ({ language }: BookingProps) => {
                     </motion.ul>
                   )}
                 </AnimatePresence>
-
                 {(touched.serviceType || submitAttempted) &&
                   errors.serviceType && (
                     <p className="text-red-500 text-xs mt-1">
@@ -503,11 +506,10 @@ const Booking = ({ language }: BookingProps) => {
                   )}
               </div>
 
-              {/* Preferred Date (custom calendar) */}
+              {/* Preferred Date */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
                 <div className="relative" ref={calendarRef}>
@@ -515,19 +517,19 @@ const Booking = ({ language }: BookingProps) => {
                     {isEn ? "Preferred Date" : "पसंदीदा तारीख"}
                   </label>
 
-                  {/* Clickable Field */}
+                  {/* Clickable field */}
                   <div
                     onClick={() => setShowCalendar((prev) => !prev)}
-                    className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer transition-all font-[inherit] ${
                       (touched.date || submitAttempted) && errors.date
                         ? "border-red-400"
                         : "border-gray-300 hover:border-orange-400"
                     }`}
                   >
                     <span
-                      className={`${
+                      className={`block truncate ${
                         form.date ? "text-gray-800" : "text-gray-500 italic"
-                      } select-none`}
+                      } text-base font-normal leading-normal`}
                     >
                       {form.date
                         ? new Date(form.date + "T00:00:00").toLocaleDateString(
@@ -542,24 +544,36 @@ const Booking = ({ language }: BookingProps) => {
                         ? "Select your preferred service date"
                         : "अपनी पसंदीदा तारीख़ चुनें"}
                     </span>
-                    <FaRegCalendarAlt className="text-gray-500" />
+                    <FaRegCalendarAlt className="text-gray-500 flex-shrink-0 ml-2" />
                   </div>
 
                   {(touched.date || submitAttempted) && errors.date && (
                     <p className="text-red-500 text-xs mt-1">{errors.date}</p>
                   )}
 
-                  {/* Calendar Popup */}
+                  {/* Calendar popup */}
                   <AnimatePresence>
                     {showCalendar && (
                       <motion.div
-                        initial={{ opacity: 0, y: -8 }}
+                        initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
+                        exit={{ opacity: 0, y: -4 }}
                         transition={{ duration: 0.25 }}
-                        className="absolute z-50 mt-2 bg-white/90 backdrop-blur-md rounded-xl shadow-2xl border border-gray-100 p-3"
+                        className="absolute top-full left-0 mt-1 w-full max-w-xs z-50
+                     bg-white rounded-xl shadow-2xl border border-gray-200 p-3
+                     overflow-hidden" // ← clip any extra month
                       >
+                        {/* Scope a tiny CSS override to guarantee single-month layout */}
+                        <style>{`
+            /* ensure DayPicker shows one month and never overflows */
+            .rdp-months { display: block !important; }
+            .rdp-month { width: 100%; }
+          `}</style>
+
                         <DayPicker
+                          numberOfMonths={1} // ← force single month
+                          showOutsideDays={false}
+                          pagedNavigation={false}
                           mode="single"
                           selected={
                             form.date
@@ -575,7 +589,7 @@ const Booking = ({ language }: BookingProps) => {
                             );
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
-                            if (local < today) return; // block past days
+                            if (local < today) return;
 
                             const iso = `${local.getFullYear()}-${String(
                               local.getMonth() + 1
@@ -586,25 +600,21 @@ const Booking = ({ language }: BookingProps) => {
                             setTouched((t) => ({ ...t, date: true }));
                             setShowCalendar(false);
                           }}
-                          /* ❌ make past days unclickable + faded */
                           modifiers={{ disabled: { before: new Date() } }}
                           modifiersStyles={{
                             disabled: { opacity: 0.3, pointerEvents: "none" },
                             selected: {
-                              backgroundColor: "#f97316", // ✅ Aashvi Orange
+                              backgroundColor: "#f97316",
                               color: "#fff",
                               fontWeight: 700,
                               borderRadius: "8px",
                             },
                           }}
-                          /* ✅ force theme to orange + remove blue ring */
                           style={{
                             ["--rdp-accent-color" as any]: "#f97316",
                             ["--rdp-accent-background-color" as any]: "#f97316",
-                            ["--rdp-outline" as any]: "0", // remove focus ring
-                            ["--rdp-outline-selected" as any]: "0", // remove selected ring
+                            ["--rdp-outline" as any]: "0",
                           }}
-                          /* ✅ brand styling; no blue border for 'today' */
                           styles={{
                             caption: { color: "#0B3B74", fontWeight: 600 },
                             nav_button: { color: "#0B3B74" },
@@ -618,11 +628,7 @@ const Booking = ({ language }: BookingProps) => {
                               borderRadius: "8px",
                               margin: "2px",
                             },
-                            day_today: {
-                              color: "#0B3B74",
-                              fontWeight: 600,
-                              border: "none",
-                            }, // ⬅️ no border!
+                            day_today: { color: "#0B3B74", fontWeight: 600 },
                           }}
                         />
                       </motion.div>
@@ -656,7 +662,7 @@ const Booking = ({ language }: BookingProps) => {
                 whileTap={{ scale: loading ? 1 : 0.95 }}
                 type="submit"
                 disabled={loading}
-                className={`md:col-span-2 flex justify-center items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-lg shadow-md transition-transform ${
+                className={`md:col-span-2 flex justify-center items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3.5 sm:py-4 rounded-lg shadow-md transition-transform ${
                   loading ? "opacity-90 cursor-not-allowed" : ""
                 }`}
               >
@@ -685,7 +691,7 @@ const Booking = ({ language }: BookingProps) => {
                     <span className="text-base font-medium">Sending...</span>
                   </div>
                 ) : (
-                  <span className="text-base font-medium">
+                  <span className="text-base sm:text-lg font-medium">
                     {isEn ? "Submit Booking" : "बुकिंग सबमिट करें"}
                   </span>
                 )}

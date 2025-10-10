@@ -125,15 +125,15 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
 
   return (
     <section
-      className="relative py-24 px-6 md:px-20 overflow-hidden"
+      className="relative py-20 sm:py-24 px-4 sm:px-8 md:px-16 lg:px-20 overflow-hidden"
       style={{
         background: `linear-gradient(to bottom right, ${data.gradient_from}, ${data.gradient_via}, ${data.gradient_to})`,
       }}
     >
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+      <div className="relative z-10 grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
         {/* LEFT: Partnership Visual */}
-        <div className="relative flex flex-col items-center justify-center h-80 md:h-[420px]">
-          {/* Animated soft background glow */}
+        <div className="relative flex flex-col items-center justify-center h-auto md:h-[420px]">
+          {/* Animated background glow */}
           <motion.div
             className="absolute inset-0 bg-gradient-to-br from-green-100 via-white to-orange-100 opacity-80 rounded-3xl blur-2xl"
             animate={{
@@ -152,12 +152,12 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="relative z-10 flex items-center justify-center bg-white/70 backdrop-blur-md shadow-2xl rounded-2xl px-10 py-8 border border-white/40"
+            className="relative z-10 flex flex-col sm:flex-row items-center justify-center bg-white/70 backdrop-blur-md shadow-2xl rounded-2xl px-8 sm:px-10 py-8 border border-white/40 w-full max-w-md sm:max-w-lg mx-auto"
           >
             {/* Aashvi Logo */}
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center mb-6 sm:mb-0"
             >
               <img
                 src={
@@ -165,16 +165,16 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
                   "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg"
                 }
                 alt="Aashvi Automotive"
-                className="h-16 w-16 md:h-20 md:w-20 object-contain rounded-full border-2 border-green-500 shadow-md bg-white p-1"
+                className="h-16 w-16 sm:h-18 sm:w-18 md:h-20 md:w-20 object-contain rounded-full border-2 border-green-500 shadow-md bg-white p-1"
               />
-              <span className="text-sm font-semibold text-gray-700 mt-2">
+              <span className="text-sm font-semibold text-gray-700 mt-2 text-center">
                 Aashvi Automotive
               </span>
             </motion.div>
 
             {/* Animated connector */}
             <motion.div
-              className="mx-4 md:mx-6 relative"
+              className="my-4 sm:my-0 sm:mx-6 relative"
               animate={{
                 opacity: [0.6, 1, 0.6],
                 scale: [0.9, 1, 0.9],
@@ -185,7 +185,7 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
                 ease: "easeInOut",
               }}
             >
-              <div className="h-1 w-16 md:w-24 bg-gradient-to-r from-green-500 via-yellow-400 to-orange-500 rounded-full shadow-lg" />
+              <div className="h-1 w-16 sm:w-24 bg-gradient-to-r from-green-500 via-yellow-400 to-orange-500 rounded-full shadow-lg" />
               <motion.span
                 className="absolute top-[-6px] left-0 w-3 h-3 rounded-full bg-green-500 shadow-md"
                 animate={{ x: [0, 64, 0] }}
@@ -197,7 +197,7 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
               />
             </motion.div>
 
-            {/* Service Force Logo (slightly larger) */}
+            {/* Service Force Logo */}
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex flex-col items-center"
@@ -208,9 +208,9 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
                   "https://serviceforce.in/assets/img/logo.png"
                 }
                 alt="Service Force"
-                className="h-20 w-20 md:h-24 md:w-24 object-contain rounded-full border-2 border-orange-500 shadow-md bg-white p-2"
+                className="h-18 w-18 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain rounded-full border-2 border-orange-500 shadow-md bg-white p-2"
               />
-              <span className="text-sm font-semibold text-gray-700 mt-2">
+              <span className="text-sm font-semibold text-gray-700 mt-2 text-center">
                 Service Force
               </span>
             </motion.div>
@@ -222,19 +222,23 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
           initial={{ opacity: 0, x: 40 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
+          className="text-center xl:text-left"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 leading-snug">
             {headingJSX}
           </h2>
 
-          <p className="text-lg md:text-xl text-gray-600 mb-3">{subheading}</p>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-3">
+            {subheading}
+          </p>
 
-          {/* Keep tagline only once on right side */}
           <p className="text-base md:text-lg text-gray-700 italic font-medium mb-3">
             {tagline}
           </p>
 
-          <p className="text-gray-700 leading-relaxed mb-8">{desc}</p>
+          <p className="text-gray-700 leading-relaxed mb-8 text-sm sm:text-base max-w-2xl mx-auto xl:mx-0">
+            {desc}
+          </p>
 
           <motion.a
             href={data.cta_link}
@@ -242,7 +246,7 @@ const PartnershipSection = ({ language }: PartnershipSectionProps) => {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-block bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-transform"
+            className="inline-block bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white font-semibold px-6 sm:px-8 py-3 rounded-lg shadow-md transition-transform"
           >
             {cta}
           </motion.a>

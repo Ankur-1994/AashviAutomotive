@@ -86,40 +86,40 @@ const ReferAndEarn = ({ language }: ReferProps) => {
         }}
       />
 
-      <section
-        className="relative flex flex-col justify-center items-center 
-  min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 
-  px-6 md:px-20 mt-[80px] md:mt-0 pb-16"
-      >
-        <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center">
+      <section className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 px-4 sm:px-6 md:px-10 lg:px-20 pt-28 md:pt-24 pb-16">
+        <div className="max-w-7xl w-full grid grid-cols-1 xl:grid-cols-[1fr_1.2fr] gap-10 sm:gap-12 md:gap-14 lg:gap-16 items-center">
           {/* Left: Banner Image */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center"
+            className="flex justify-center items-center"
           >
-            <img
-              src={data.banner_url}
-              alt="Refer and Earn"
-              className="rounded-2xl shadow-xl w-full max-w-md h-auto object-cover md:max-w-full"
-            />
+            <div className="w-full flex justify-center">
+              <img
+                src={data.banner_url}
+                alt="Refer and Earn"
+                className="rounded-2xl shadow-xl w-[85%] sm:w-[70%] md:w-[60%] xl:w-full max-w-[480px] h-auto object-contain"
+              />
+            </div>
           </motion.div>
 
           {/* Right: Text Section */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center md:text-left"
+            className="text-center xl:text-left md:px-4 lg:px-0"
           >
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-snug">
+            <h1 className="text-3xl sm:text-4xl md:text-[2.3rem] xl:text-5xl font-extrabold text-gray-900 mb-4 leading-snug">
               {heading}
             </h1>
-            <p className="text-lg text-gray-700 mb-6">{desc}</p>
+            <p className="text-base sm:text-lg md:text-[1.05rem] text-gray-700 mb-6 leading-relaxed max-w-xl mx-auto xl:mx-0">
+              {desc}
+            </p>
 
-            <div className="bg-white shadow-lg rounded-2xl p-6 border-l-4 border-orange-500 mb-6 text-left">
-              <h2 className="text-xl font-bold mb-2 text-gray-800">
+            <div className="bg-white shadow-lg rounded-2xl p-5 sm:p-6 border-l-4 border-orange-500 mb-6 text-left mx-auto xl:mx-0 max-w-lg">
+              <h2 className="text-lg sm:text-xl font-bold mb-2 text-gray-800">
                 {language === "en" ? "How It Works" : "यह कैसे काम करता है"}
               </h2>
               <ul className="space-y-3 text-gray-700">
@@ -129,7 +129,7 @@ const ReferAndEarn = ({ language }: ReferProps) => {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.2 }}
-                    className="flex items-start gap-2"
+                    className="flex items-start gap-2 text-sm sm:text-base"
                   >
                     <span className="text-orange-500 font-bold">
                       {index + 1}.
@@ -140,7 +140,9 @@ const ReferAndEarn = ({ language }: ReferProps) => {
               </ul>
             </div>
 
-            <p className="text-green-700 font-semibold mb-6">{rewards}</p>
+            <p className="text-green-700 font-semibold mb-6 text-sm sm:text-base">
+              {rewards}
+            </p>
 
             <motion.a
               href={data.cta_link}
@@ -148,7 +150,7 @@ const ReferAndEarn = ({ language }: ReferProps) => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-block bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-transform"
+              className="inline-block bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600 text-white font-semibold px-6 sm:px-8 py-3 rounded-lg shadow-md transition-transform text-sm sm:text-base"
             >
               {cta}
             </motion.a>

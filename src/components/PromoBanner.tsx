@@ -100,74 +100,85 @@ const PromoBanner = ({ language }: PromoBannerProps) => {
 
   return (
     <AnimatePresence>
-      <motion.div
-        key="promo-banner"
-        initial={{ opacity: 0, x: -50, y: 50 }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed bottom-6 left-6 z-50 w-[300px] md:w-[360px] bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-orange-200"
-      >
-        {/* ✅ Close button — visible & accessible */}
-        <button
-          onClick={() => setVisible(false)}
-          className="absolute top-2 right-2 bg-black/40 hover:bg-black/60 text-white p-1.5 rounded-full transition-all z-20"
-          aria-label="Close Promo"
+      {visible && (
+        <motion.div
+          key="promo-banner"
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 60 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="
+        fixed z-50
+        bottom-4 sm:bottom-6
+        left-4 sm:left-6
+        w-[92vw] sm:w-[300px] md:w-[340px]
+        bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden
+        border border-orange-200
+      "
         >
-          <FaTimes size={14} />
-        </button>
+          {/* ✅ Close button */}
+          <button
+            onClick={() => setVisible(false)}
+            className="absolute top-2 right-2 bg-black/40 hover:bg-black/60 text-white p-1.5 sm:p-2 rounded-full transition-all z-20"
+            aria-label="Close Promo"
+          >
+            <FaTimes size={14} />
+          </button>
 
-        {/* Promo Image with progress bar */}
-        <div
-          className="w-full h-32 bg-cover bg-center relative"
-          style={{ backgroundImage: `url(${promo.image})` }}
-        >
+          {/* ✅ Promo Image */}
+          <div
+            className="w-full h-28 sm:h-32 bg-cover bg-center relative"
+            style={{ backgroundImage: `url(${promo.image})` }}
+          >
+            {promos.length > 1 && (
+              <div className="absolute top-0 left-0 w-full h-1 bg-white/40">
+                <div
+                  className="h-full bg-orange-500 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            )}
+          </div>
+
+          {/* ✅ Text Content */}
+          <div className="p-3 sm:p-4 text-center text-gray-800">
+            <h3 className="text-base sm:text-lg font-semibold text-orange-600 mb-1 leading-snug">
+              {language === "en" ? promo.title_en : promo.title_hi}
+            </h3>
+
+            <p className="text-xs sm:text-sm text-gray-600 mb-3 leading-normal">
+              {language === "en" ? promo.desc_en : promo.desc_hi}
+            </p>
+
+            <Link
+              to={linkTo}
+              className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium shadow-md transition-transform hover:scale-[1.05]"
+            >
+              {ctaLabel}
+            </Link>
+          </div>
+
+          {/* ✅ Slide Dots */}
           {promos.length > 1 && (
-            <div className="absolute top-0 left-0 w-full h-1 bg-white/40">
-              <div
-                className="h-full bg-orange-500 transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              ></div>
+            <div className="flex justify-center items-center space-x-2 pb-3">
+              {promos.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setCurrentIndex(i);
+                    setProgress(0);
+                  }}
+                  className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all ${
+                    i === currentIndex
+                      ? "bg-orange-500 scale-110"
+                      : "bg-gray-400 hover:bg-orange-400"
+                  }`}
+                />
+              ))}
             </div>
           )}
-        </div>
-
-        {/* Promo Text Content */}
-        <div className="p-4 text-center text-gray-800">
-          <h3 className="text-lg md:text-xl font-semibold text-orange-600 mb-1">
-            {language === "en" ? promo.title_en : promo.title_hi}
-          </h3>
-          <p className="text-sm text-gray-600 mb-3">
-            {language === "en" ? promo.desc_en : promo.desc_hi}
-          </p>
-          <Link
-            to={linkTo}
-            className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-5 py-2 rounded-lg font-medium shadow-md transition-transform hover:scale-[1.05]"
-          >
-            {ctaLabel}
-          </Link>
-        </div>
-
-        {/* ✅ Slide Dots — indicator + control */}
-        {promos.length > 1 && (
-          <div className="flex justify-center items-center space-x-2 pb-3">
-            {promos.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setCurrentIndex(i);
-                  setProgress(0);
-                }}
-                className={`w-2.5 h-2.5 rounded-full ${
-                  i === currentIndex
-                    ? "bg-orange-500 scale-110"
-                    : "bg-gray-400 hover:bg-orange-400"
-                } transition-all`}
-              />
-            ))}
-          </div>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 };

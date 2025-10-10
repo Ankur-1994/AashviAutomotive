@@ -29,10 +29,6 @@ const ScrollToTop = () => {
 function App() {
   const [language, setLanguage] = useState<"en" | "hi">("en");
 
-  useEffect(() => {
-    import("./utils/tawk").then((m) => m.loadTawkWhenIdle());
-  }, []);
-
   return (
     <Router>
       <ScrollToTop />

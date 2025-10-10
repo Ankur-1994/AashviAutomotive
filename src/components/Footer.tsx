@@ -84,22 +84,22 @@ const Footer = ({ language }: FooterProps) => {
   if (!meta) return null;
 
   return (
-    <footer className="relative bg-gradient-to-b from-[#0B3B74] via-[#0B3B74]/90 to-black text-gray-200 py-14 px-6 md:px-20 mt-10 overflow-hidden">
+    <footer className="relative bg-gradient-to-b from-[#0B3B74] via-[#0B3B74]/90 to-black text-gray-200 py-14 px-6 sm:px-10 md:px-16 lg:px-20 mt-10 overflow-hidden">
       {/* Gradient glows */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-900/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 right-0 w-48 sm:w-56 md:w-64 h-48 sm:h-56 md:h-64 bg-orange-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-56 sm:w-64 md:w-72 h-56 sm:h-64 md:h-72 bg-blue-900/10 rounded-full blur-3xl"></div>
 
       {/* Grid layout */}
-      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 relative z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 md:gap-14 relative z-10">
         {/* --- Column 1: About --- */}
-        <div>
+        <div className="flex flex-col items-start sm:items-start text-left">
           <div className="flex items-center gap-3 mb-4">
             <img
               src={meta.logo_url}
               alt={isEn ? meta.name_en : meta.name_hi}
-              className="h-12 w-12 object-contain rounded-md"
+              className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-md"
             />
-            <h3 className="text-xl tracking-wide font-semibold">
+            <h3 className="text-lg sm:text-xl tracking-wide font-semibold">
               <span className="text-orange-400">
                 {isEn ? meta.name_en.split(" ")[0] : meta.name_hi.split(" ")[0]}
               </span>{" "}
@@ -108,7 +108,7 @@ const Footer = ({ language }: FooterProps) => {
               </span>
             </h3>
           </div>
-          <p className="text-sm text-gray-300 leading-relaxed mb-4">
+          <p className="text-sm text-gray-300 leading-relaxed mb-3 sm:mb-4">
             {isEn ? meta.description_en : meta.description_hi}
           </p>
           <p className="text-xs italic text-gray-400">
@@ -117,8 +117,8 @@ const Footer = ({ language }: FooterProps) => {
         </div>
 
         {/* --- Column 2: Quick Links --- */}
-        <div>
-          <h3 className="text-lg font-semibold text-orange-400 mb-3">
+        <div className="sm:mt-0">
+          <h3 className="text-base sm:text-lg font-semibold text-orange-400 mb-3 sm:mb-4">
             {isEn ? "Quick Links" : "त्वरित लिंक"}
           </h3>
           <ul className="space-y-2 text-sm">
@@ -134,7 +134,7 @@ const Footer = ({ language }: FooterProps) => {
               <li key={link.to}>
                 <Link
                   to={link.to}
-                  className="hover:text-orange-400 transition-colors"
+                  className="hover:text-orange-400 transition-colors block"
                 >
                   {isEn ? link.label : link.hi}
                 </Link>
@@ -144,8 +144,8 @@ const Footer = ({ language }: FooterProps) => {
         </div>
 
         {/* --- Column 3: Legal Links --- */}
-        <div>
-          <h3 className="text-lg font-semibold text-orange-400 mb-3">
+        <div className="sm:mt-0">
+          <h3 className="text-base sm:text-lg font-semibold text-orange-400 mb-3 sm:mb-4">
             {isEn ? "Legal & Policies" : "कानूनी और नीतियाँ"}
           </h3>
           <ul className="space-y-2 text-sm">
@@ -182,8 +182,8 @@ const Footer = ({ language }: FooterProps) => {
         </div>
 
         {/* --- Column 4: Contact Info --- */}
-        <div>
-          <h3 className="text-lg font-semibold text-orange-400 mb-3">
+        <div className="sm:mt-0">
+          <h3 className="text-base sm:text-lg font-semibold text-orange-400 mb-3 sm:mb-4">
             {isEn ? "Reach Us" : "हमसे संपर्क करें"}
           </h3>
           <ul className="space-y-3 text-sm">
@@ -259,10 +259,10 @@ const Footer = ({ language }: FooterProps) => {
       </div>
 
       {/* Bottom bar */}
-      <div className="mt-12 border-t border-gray-700 pt-4 text-center text-xs text-gray-400 relative z-10">
+      <div className="mt-12 border-t border-gray-700 pt-5 text-center text-xs sm:text-[13px] text-gray-400 relative z-10">
         © {currentYear} {isEn ? meta.name_en : meta.name_hi}.{" "}
         {isEn ? "All Rights Reserved." : "सर्वाधिकार सुरक्षित।"} <br />
-        <span className="text-[11px] text-gray-500">
+        <span className="block mt-1 text-[11px] text-gray-500">
           {isEn
             ? "Authorized Franchise Partner — Service Force India"
             : "अधिकृत फ्रेंचाइज़ पार्टनर — सर्विस फोर्स इंडिया"}

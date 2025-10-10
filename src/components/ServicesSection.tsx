@@ -86,7 +86,7 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
   const globalCTA = language === "en" ? data.global_cta_en : data.global_cta_hi;
 
   return (
-    <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-[#0B3B74]/5 to-white text-gray-900">
+    <section className="py-16 sm:py-20 px-4 sm:px-8 md:px-16 lg:px-20 bg-gradient-to-b from-[#0B3B74]/5 to-white text-gray-900">
       <SeoHelmet
         pageKey="services"
         language={language}
@@ -102,16 +102,19 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
           },
         }}
       />
+
       {/* Header */}
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-[#0B3B74] mb-4">{heading}</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">
+      <div className="text-center mb-10 sm:mb-12 px-2">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#0B3B74] mb-4 leading-snug">
+          {heading}
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base md:text-lg leading-relaxed">
           {subheading}
         </p>
       </div>
 
       {/* Services Grid */}
-      <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-10 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
         {data.items.map((service, index) => (
           <motion.div
             key={index}
@@ -119,26 +122,26 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 relative"
+            className="group bg-white rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 flex flex-col justify-between"
           >
             {/* Icon */}
             <div className="flex justify-center mb-6">
               <img
                 src={service.icon}
                 alt={language === "en" ? service.title_en : service.title_hi}
-                className="w-16 h-16 object-contain transition-transform duration-500 group-hover:scale-110
-                           brightness-0 invert-[0.5] sepia-[1] saturate-[10000%] hue-rotate-[5deg]"
+                className="w-14 h-14 sm:w-16 sm:h-16 object-contain transition-transform duration-500 group-hover:scale-110
+                       brightness-0 invert-[0.5] sepia-[1] saturate-[10000%] hue-rotate-[5deg]"
                 loading="lazy"
               />
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold mb-2 text-center text-[#0B3B74] group-hover:text-orange-500 transition-colors">
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 text-center text-[#0B3B74] group-hover:text-orange-500 transition-colors">
               {language === "en" ? service.title_en : service.title_hi}
             </h3>
 
             {/* Description */}
-            <p className="text-gray-600 text-sm md:text-base leading-relaxed text-center mb-5">
+            <p className="text-gray-600 text-sm sm:text-base leading-relaxed text-center mb-4 sm:mb-5">
               {language === "en" ? service.desc_en : service.desc_hi}
             </p>
 
@@ -148,7 +151,7 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
                 {service.tags.map((tag, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 text-xs rounded-full bg-orange-50 text-orange-600 font-medium border border-orange-100"
+                    className="px-3 py-1 text-[11px] sm:text-xs rounded-full bg-orange-50 text-orange-600 font-medium border border-orange-100"
                   >
                     {tag}
                   </span>
@@ -157,14 +160,13 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
             )}
 
             {/* Expand Button */}
-            {/* Expand Button */}
             {service.details_en && (
               <div className="flex justify-center mt-4">
                 <button
                   onClick={() =>
                     setExpandedIndex(expandedIndex === index ? null : index)
                   }
-                  className="flex items-center justify-center gap-2 text-sm font-medium text-orange-500 hover:text-orange-600 transition-all"
+                  className="flex items-center justify-center gap-2 text-xs sm:text-sm font-medium text-orange-500 hover:text-orange-600 transition-all"
                 >
                   {expandedIndex === index
                     ? language === "en"
@@ -182,7 +184,7 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
               </div>
             )}
 
-            {/* Animated Expandable Section */}
+            {/* Expandable Section */}
             <AnimatePresence>
               {expandedIndex === index && (
                 <motion.div
@@ -211,11 +213,11 @@ const ServicesSection = ({ language }: ServicesSectionProps) => {
         ))}
       </div>
 
-      {/* Global CTA */}
-      <div className="text-center mt-16">
+      {/* CTA */}
+      <div className="text-center mt-14 sm:mt-16">
         <a
           href={data.global_cta_link || "/booking"}
-          className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold px-10 py-4 rounded-xl shadow-lg transition-all"
+          className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-base sm:text-lg font-semibold px-8 sm:px-10 py-3 sm:py-4 rounded-xl shadow-lg transition-all"
         >
           {globalCTA ||
             (language === "en" ? "Book a Service Now" : "अभी सर्विस बुक करें")}

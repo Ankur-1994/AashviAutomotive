@@ -35,6 +35,8 @@ interface ContactProps {
 const Contact = ({ language }: ContactProps) => {
   const [contactData, setContactData] = useState<ContactContent | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
@@ -147,20 +149,20 @@ const Contact = ({ language }: ContactProps) => {
       />
 
       {/* 🌟 Hero Section with Animated Gradient */}
-      <section className="relative h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[320px] md:h-[420px] lg:h-[460px] overflow-hidden text-center">
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 animate-gradientMove bg-[length:400%_400%] bg-gradient-to-r from-[#0B3B74] via-[#144b9e] via-[#ff7e3d] to-[#0B3B74] opacity-95"></div>
 
         {/* Overlay for readability */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/30"></div>
 
-        {/* Hero Content */}
-        <div className="relative text-center text-white z-10 px-6">
+        {/* Hero Content — true center alignment */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-6 md:px-10 z-10">
           <motion.h1
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg"
+            className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-white drop-shadow-md"
           >
             {language === "en"
               ? contactData.heading_en
@@ -168,10 +170,10 @@ const Contact = ({ language }: ContactProps) => {
           </motion.h1>
 
           <motion.p
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1 }}
-            className="max-w-2xl mx-auto text-gray-200 text-lg leading-relaxed"
+            className="max-w-2xl mx-auto text-base md:text-lg text-gray-200 leading-relaxed"
           >
             {language === "en" ? contactData.desc_en : contactData.desc_hi}
           </motion.p>
@@ -179,20 +181,22 @@ const Contact = ({ language }: ContactProps) => {
       </section>
 
       {/* 🧭 Main Contact Section */}
-      <section className="max-w-6xl mx-auto py-16 px-6 md:px-12 flex flex-col md:flex-row gap-10 md:gap-12 items-stretch">
+      <section className="max-w-6xl mx-auto py-16 px-4 sm:px-8 md:px-12 lg:px-20 flex flex-col md:flex-row gap-10 md:gap-12 items-stretch">
         {/* Left - Contact Info */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="flex-1 bg-gradient-to-br from-orange-50 via-white to-blue-50 rounded-2xl shadow-lg p-8 border border-gray-100 flex flex-col justify-between"
+          className="flex-1 bg-gradient-to-br from-orange-50 via-white to-blue-50 
+                       rounded-2xl shadow-md md:shadow-lg border border-gray-100 
+                       p-6 sm:p-8 flex flex-col justify-between"
         >
           <div>
             <h2 className="text-2xl font-semibold text-[#0B3B74] mb-6">
               {language === "en" ? contactData.title_en : contactData.title_hi}
             </h2>
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-gray-700 text-base leading-relaxed">
               <div className="flex items-start gap-3">
                 <FaMapMarkerAlt className="text-orange-500 mt-1" />
                 <p>
@@ -205,7 +209,7 @@ const Contact = ({ language }: ContactProps) => {
                 <FaPhoneAlt className="text-orange-500" />
                 <a
                   href={`tel:${contactData.phone}`}
-                  className="hover:text-orange-600"
+                  className="hover:text-orange-600 transition-colors"
                 >
                   {contactData.phone}
                 </a>
@@ -214,7 +218,7 @@ const Contact = ({ language }: ContactProps) => {
                 <FaEnvelope className="text-orange-500" />
                 <a
                   href={`mailto:${contactData.email}`}
-                  className="hover:text-orange-600"
+                  className="hover:text-orange-600 transition-colors break-all"
                 >
                   {contactData.email}
                 </a>
@@ -228,7 +232,7 @@ const Contact = ({ language }: ContactProps) => {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-green-700"
+                  className="hover:text-green-700 transition-colors"
                 >
                   {language === "en" ? ctaEn : ctaHi}
                 </a>
@@ -254,7 +258,7 @@ const Contact = ({ language }: ContactProps) => {
           className="flex-1 flex flex-col gap-6"
         >
           {/* Map */}
-          <div className="flex-1 overflow-hidden rounded-2xl shadow-lg border border-gray-200 h-[280px]">
+          <div className="overflow-hidden rounded-2xl shadow-md md:shadow-lg border border-gray-200 h-[260px] sm:h-[300px]">
             <iframe
               src={contactData.google_map_embed}
               width="100%"
@@ -266,41 +270,123 @@ const Contact = ({ language }: ContactProps) => {
           </div>
 
           {/* Contact Form */}
-          <div className="flex-1 bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md md:shadow-lg border border-gray-100">
             <h3 className="text-xl font-semibold text-[#0B3B74] mb-4">
               {language === "en" ? "Send us a message" : "हमें संदेश भेजें"}
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder={language === "en" ? "Your Name" : "आपका नाम"}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <input
-                type="tel"
-                placeholder={language === "en" ? "Phone Number" : "फ़ोन नंबर"}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+
+                // validation before calling your existing handleSubmit
+                let isValid = true;
+
+                if (!form.name.trim()) {
+                  setNameError(
+                    language === "en"
+                      ? "Please enter your name"
+                      : "कृपया अपना नाम दर्ज करें"
+                  );
+                  isValid = false;
+                } else {
+                  setNameError("");
+                }
+
+                if (!form.phone.trim() || form.phone.length < 10) {
+                  setPhoneError(
+                    language === "en"
+                      ? "Please enter a valid 10-digit mobile number"
+                      : "कृपया 10 अंकों का मान्य मोबाइल नंबर दर्ज करें"
+                  );
+                  isValid = false;
+                } else {
+                  setPhoneError("");
+                }
+
+                if (!isValid) return;
+
+                // ✅ valid form — call your existing function
+                handleSubmit(e);
+              }}
+              className="space-y-4"
+              noValidate
+            >
+              {/* Name Field */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={language === "en" ? "Your Name" : "आपका नाम"}
+                  className={`w-full border rounded-lg px-4 py-3 focus:ring-2 outline-none text-base transition ${
+                    nameError
+                      ? "border-red-400 focus:ring-red-400"
+                      : "border-gray-300 focus:ring-orange-400"
+                  }`}
+                  value={form.name}
+                  onChange={(e) => {
+                    setForm({ ...form, name: e.target.value });
+                    if (nameError && e.target.value.trim() !== "") {
+                      setNameError("");
+                    }
+                  }}
+                />
+                {nameError && (
+                  <p className="text-red-500 text-sm mt-1">{nameError}</p>
+                )}
+              </div>
+
+              {/* Phone Field */}
+              <div className="relative">
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  onInput={(e) => {
+                    const value = e.currentTarget.value.replace(/\D/g, "");
+                    if (value.length <= 10) setForm({ ...form, phone: value });
+                    if (phoneError && value.length === 10) {
+                      setPhoneError("");
+                    }
+                  }}
+                  placeholder={
+                    language === "en"
+                      ? "10-digit Mobile Number"
+                      : "10 अंकों का मोबाइल नंबर"
+                  }
+                  className={`w-full border rounded-lg px-4 py-3 focus:ring-2 outline-none text-base transition ${
+                    phoneError
+                      ? "border-red-400 focus:ring-red-400"
+                      : "border-gray-300 focus:ring-orange-400"
+                  }`}
+                  value={form.phone}
+                />
+
+                {phoneError && (
+                  <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+                )}
+              </div>
+
+              {/* Message Field */}
               <textarea
                 placeholder={
                   language === "en"
                     ? "How can we help you?"
                     : "हम आपकी कैसे मदद कर सकते हैं?"
                 }
-                className="w-full border rounded-lg px-4 py-2 h-28 resize-none focus:ring-2 focus:ring-orange-400 outline-none"
+                className="w-full border rounded-lg px-4 py-3 h-28 resize-none focus:ring-2 focus:ring-orange-400 outline-none text-base transition"
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2.5 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 
+               text-white py-3 rounded-lg font-semibold 
+               hover:from-orange-600 hover:to-orange-700 
+               transition-all duration-300 disabled:opacity-80"
               >
                 {status === "sending"
                   ? "Sending..."
@@ -333,10 +419,13 @@ const Contact = ({ language }: ContactProps) => {
         href={`https://wa.me/${contactData.whatsapp.replace(/\D/g, "")}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg z-50 transition-transform hover:scale-110"
+        className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 
+                     bg-green-600 hover:bg-green-700 text-white 
+                     p-3 sm:p-4 rounded-full shadow-lg z-50 
+                     transition-transform hover:scale-110"
         aria-label="Chat on WhatsApp"
       >
-        <FaWhatsapp className="text-2xl" />
+        <FaWhatsapp className="text-2xl sm:text-3xl" />
       </a>
     </div>
   );

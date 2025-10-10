@@ -62,7 +62,7 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
   if (!data || !data.brands?.length) return null;
 
   return (
-    <section className="relative overflow-x-hidden overflow-y-visible py-20 px-6 md:px-20 bg-gradient-to-b from-white to-[#0B3B74]/5">
+    <section className="relative overflow-x-hidden overflow-y-visible py-16 sm:py-20 px-4 sm:px-8 md:px-16 lg:px-20 bg-gradient-to-b from-white to-[#0B3B74]/5">
       <SeoHelmet
         pageKey="brands"
         language={language}
@@ -95,30 +95,12 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
             "@type": "OfferCatalog",
             name: "Two-Wheeler Brands Serviced",
             itemListElement: [
-              {
-                "@type": "Product",
-                name: "Hero MotoCorp",
-              },
-              {
-                "@type": "Product",
-                name: "Honda Motorcycle & Scooter India",
-              },
-              {
-                "@type": "Product",
-                name: "TVS Motor",
-              },
-              {
-                "@type": "Product",
-                name: "Bajaj Auto",
-              },
-              {
-                "@type": "Product",
-                name: "Yamaha Motor",
-              },
-              {
-                "@type": "Product",
-                name: "Suzuki Motorcycle",
-              },
+              { "@type": "Product", name: "Hero MotoCorp" },
+              { "@type": "Product", name: "Honda Motorcycle & Scooter India" },
+              { "@type": "Product", name: "TVS Motor" },
+              { "@type": "Product", name: "Bajaj Auto" },
+              { "@type": "Product", name: "Yamaha Motor" },
+              { "@type": "Product", name: "Suzuki Motorcycle" },
             ],
           },
           sameAs: [
@@ -128,17 +110,23 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
         }}
       />
 
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#0B3B74]">
-        {language === "en"
-          ? "We Service All Major Brands"
-          : "हम सभी प्रमुख ब्रांडों की सर्विस करते हैं"}
-      </h2>
+      {/* Header */}
+      <div className="text-center mb-8 sm:mb-10">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0B3B74] leading-snug">
+          {language === "en"
+            ? "We Service All Major Brands"
+            : "हम सभी प्रमुख ब्रांडों की सर्विस करते हैं"}
+        </h2>
+      </div>
 
-      <BrandsMarquee brands={data.brands} language={language} />
+      {/* Brands Marquee */}
+      <div className="max-w-6xl mx-auto">
+        <BrandsMarquee brands={data.brands} language={language} />
+      </div>
 
-      {/* Footer tagline from Firebase */}
+      {/* Footer tagline */}
       {(data.footer_en || data.footer_hi) && (
-        <p className="text-center text-gray-700 mt-12 text-base md:text-lg font-medium max-w-3xl mx-auto italic">
+        <p className="text-center text-gray-700 mt-10 sm:mt-12 text-sm sm:text-base md:text-lg font-medium max-w-3xl mx-auto italic px-4">
           {language === "en" ? data.footer_en : data.footer_hi}
         </p>
       )}

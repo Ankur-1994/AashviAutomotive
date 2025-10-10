@@ -156,26 +156,26 @@ const Services = ({ language }: ServicesProps) => {
         }}
       />
 
-      {/* 🔶 Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-900 via-black to-orange-900 opacity-90"></div>
+      {/* 🔶 Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B3B74] via-black to-orange-900 opacity-95"></div>
 
       {/* 🌟 Header */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative text-center px-6 md:px-20 pt-28 pb-12"
+        className="relative text-center px-6 sm:px-10 md:px-20 pt-28 pb-10 md:pb-14"
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-orange-400 mb-3 drop-shadow-lg">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-orange-400 mb-4 drop-shadow-lg leading-tight">
           {language === "en" ? data.heading_en : data.heading_hi}
         </h1>
-        <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
           {language === "en" ? data.subheading_en : data.subheading_hi}
         </p>
       </motion.div>
 
       {/* ⚙️ Services Cards */}
-      <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-6 md:px-20 z-10">
+      <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 px-6 sm:px-10 md:px-20 z-10 pb-16">
         {data.services.map((service, i) => (
           <motion.div
             key={i}
@@ -183,20 +183,21 @@ const Services = ({ language }: ServicesProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: i * 0.1 }}
-            className="group bg-gradient-to-br from-gray-900/80 to-gray-800/70 border border-gray-700 rounded-3xl shadow-2xl p-8 text-center hover:shadow-orange-500/30 hover:-translate-y-2 transition-all duration-500 backdrop-blur-md"
+            className="group bg-gradient-to-br from-gray-900/80 to-gray-800/70 border border-gray-700 rounded-3xl shadow-2xl p-6 sm:p-8 text-center hover:shadow-orange-500/30 hover:-translate-y-2 transition-all duration-500 backdrop-blur-md"
           >
             <div className="flex justify-center mb-5 transform transition-transform duration-300 group-hover:scale-110">
               {IconFor(service.icon)}
             </div>
-            <h3 className="text-2xl font-semibold text-orange-400 mb-3">
+            <h3 className="text-xl sm:text-2xl font-semibold text-orange-400 mb-3">
               {language === "en" ? service.title_en : service.title_hi}
             </h3>
+
             {(service.badge_en || service.badge_hi) && (
               <motion.span
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className={`inline-block text-sm font-medium px-3 py-1 rounded-full mb-3 ${
+                className={`inline-block text-xs sm:text-sm font-medium px-3 py-1 rounded-full mb-3 ${
                   service.icon === "alert"
                     ? "bg-orange-500/20 text-orange-300"
                     : "bg-blue-500/20 text-blue-300"
@@ -205,44 +206,64 @@ const Services = ({ language }: ServicesProps) => {
                 {language === "en" ? service.badge_en : service.badge_hi}
               </motion.span>
             )}
-            <p className="text-gray-300 leading-relaxed">
+
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
               {language === "en" ? service.desc_en : service.desc_hi}
             </p>
           </motion.div>
         ))}
       </div>
 
-      {/* 🧡 Book Now CTA (kept same as before) */}
+      {/* 🧡 Book Now CTA */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
         ref={ctaRef}
-        className="relative mt-24 mx-auto max-w-4xl text-center bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl shadow-xl py-12 px-6 md:px-12 text-white z-10"
+        className="relative mt-16 sm:mt-20 px-4 sm:px-8 md:px-12 lg:px-0 z-10"
       >
-        <h2 className="text-3xl font-bold mb-4">
-          {language === "en"
-            ? "Ready to Book Your Service?"
-            : "क्या आप अपनी सर्विस बुक करने के लिए तैयार हैं?"}
-        </h2>
-        <p className="text-lg mb-8 text-orange-100">
-          {language === "en"
-            ? "Experience professional-grade two-wheeler care with Aashvi Automotive and Service Force."
-            : "आश्वी ऑटोमोटिव और सर्विस फोर्स के साथ प्रोफेशनल-ग्रेड टू-व्हीलर केयर का अनुभव करें।"}
-        </p>
-        <Link
-          to="/booking"
-          className="inline-block bg-white text-orange-600 hover:bg-orange-100 font-semibold px-8 py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105"
+        <div
+          className="mx-auto max-w-5xl text-center 
+               bg-gradient-to-r from-orange-500 to-orange-600 
+               rounded-3xl sm:rounded-[2rem] shadow-xl 
+               py-10 sm:py-14 md:py-16 px-6 sm:px-10 md:px-16 
+               text-white overflow-hidden"
         >
-          {language === "en" ? "Book Service Now" : "अभी बुक करें"}
-        </Link>
+          {/* Subtle overlay for gradient depth */}
+          <div className="absolute inset-0 bg-white/5 pointer-events-none rounded-3xl"></div>
+
+          <div className="relative z-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4 leading-snug">
+              {language === "en"
+                ? "Ready to Book Your Service?"
+                : "क्या आप अपनी सर्विस बुक करने के लिए तैयार हैं?"}
+            </h2>
+
+            <p className="text-base sm:text-lg md:text-xl mb-8 text-orange-50 max-w-2xl mx-auto leading-relaxed">
+              {language === "en"
+                ? "Experience professional-grade two-wheeler care with Aashvi Automotive and Service Force."
+                : "आश्वी ऑटोमोटिव और सर्विस फोर्स के साथ प्रोफेशनल-ग्रेड टू-व्हीलर केयर का अनुभव करें।"}
+            </p>
+
+            <Link
+              to="/booking"
+              className="inline-block bg-white text-orange-600 
+                   hover:bg-orange-100 hover:scale-[1.05] 
+                   font-semibold px-6 sm:px-8 py-3 sm:py-4 
+                   rounded-xl sm:rounded-2xl shadow-md 
+                   transition-all duration-300"
+            >
+              {language === "en" ? "Book Service Now" : "अभी बुक करें"}
+            </Link>
+          </div>
+        </div>
       </motion.div>
 
-      {/* subtle gradient overlay */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black via-transparent"></div>
+      {/* 🔸 Bottom Gradient Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-black via-transparent pointer-events-none"></div>
 
-      {/* 🧡 Floating CTA Button with perfect circular glow */}
+      {/* 🧡 Floating CTA Button */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8, y: 20 }}
         animate={{
@@ -251,7 +272,7 @@ const Services = ({ language }: ServicesProps) => {
           y: isCtaVisible ? 20 : 0,
         }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="fixed bottom-6 left-6 z-50"
+        className="fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-50"
       >
         <motion.div
           className="relative rounded-full p-[2px] bg-transparent"
@@ -271,7 +292,7 @@ const Services = ({ language }: ServicesProps) => {
         >
           <Link
             to="/booking"
-            className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-5 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+            className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-5 py-2 sm:py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
             style={{
               filter: "drop-shadow(0 0 6px rgba(255,140,0,0.4))",
             }}
