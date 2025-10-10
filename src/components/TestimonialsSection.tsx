@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar } from "react-icons/fa";
+import SeoHelmet from "../components/SeoHelmet";
 
 interface Testimonial {
   name: string;
@@ -25,33 +26,30 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
   const [data, setData] = useState<TestimonialsContent | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // 🔹 Fetch from Firebase
+  // ✅ Fetch Testimonials from Firebase (with caching)
   useEffect(() => {
     let active = true;
 
     const fetchTestimonials = async () => {
       try {
-        // ✅ Lazy-load Firebase Firestore instance
         const { getDb } = await import("../services/firebaseLazy");
         const db = await getDb();
-
-        // ✅ Lazy import Firestore methods
         const { doc, getDoc } = await import("firebase/firestore");
 
         const snap = await getDoc(doc(db, "content", "testimonials"));
         if (!active || !snap.exists()) return;
 
-        const data = snap.data() as TestimonialsContent;
-        setData(data);
-
-        // ✅ Cache for faster subsequent loads
-        sessionStorage.setItem("testimonials_data", JSON.stringify(data));
+        const fetchedData = snap.data() as TestimonialsContent;
+        setData(fetchedData);
+        sessionStorage.setItem(
+          "testimonials_data",
+          JSON.stringify(fetchedData)
+        );
       } catch (err) {
         console.error("Error fetching testimonials:", err);
       }
     };
 
-    // ✅ Use cached data first (instant paint)
     const cached = sessionStorage.getItem("testimonials_data");
     if (cached) {
       setData(JSON.parse(cached));
@@ -64,11 +62,11 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
     };
   }, []);
 
-  // 🔹 Auto slide
+  // ✅ Auto slide animation
   useEffect(() => {
     if (!data?.reviews?.length) return;
     const id = setInterval(
-      () => setActiveIndex((p) => (p + 1) % data.reviews.length),
+      () => setActiveIndex((prev) => (prev + 1) % data.reviews.length),
       7000
     );
     return () => clearInterval(id);
@@ -77,15 +75,65 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
   if (!data || !data.reviews?.length) return null;
   const t = data.reviews[activeIndex];
 
+  // ✅ Prepare Structured Data Schema
+  const averageRating =
+    data.reviews.reduce((acc, r) => acc + (r.rating || 0), 0) /
+    data.reviews.length;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Aashvi Automotive",
+    image: "https://aashviautomotive.in/favicon.ico",
+    telephone: "+919229768624",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Rishikesh Complex, Simri Dih Chowk, Rajnagar, Madhubani",
+      addressRegion: "Bihar",
+      postalCode: "847235",
+      addressCountry: "IN",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: averageRating.toFixed(1),
+      reviewCount: data.reviews.length,
+    },
+    review: data.reviews.map((r) => ({
+      "@type": "Review",
+      author: r.name,
+      reviewBody: language === "en" ? r.review_en : r.review_hi,
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: r.rating,
+        bestRating: "5",
+      },
+    })),
+  };
+
   return (
     <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-10 md:px-16 lg:px-20 bg-gradient-to-br from-[#0B3B74]/90 via-[#0B3B74]/70 to-white overflow-hidden text-white">
+      {/* ✅ SEO Meta */}
+      <SeoHelmet
+        pageKey="testimonials"
+        language={language}
+        title={
+          language === "en" ? "Customer Testimonials" : "ग्राहक प्रशंसापत्र"
+        }
+        description={
+          language === "en"
+            ? "See what our customers say about Aashvi Automotive — trusted multibrand two-wheeler workshop in Rajnagar, Madhubani."
+            : "देखें हमारे ग्राहकों का क्या कहना है — आश्वी ऑटोमोटिव, राजनगर (मधुबनी) की विश्वसनीय बाइक सर्विस।"
+        }
+        schema={schema}
+      />
+
       {/* Decorative glows */}
       <div className="pointer-events-none absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_70%)]" />
       <div className="pointer-events-none absolute bottom-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_bottom_right,rgba(255,102,0,0.12),transparent_70%)]" />
 
-      {/* ✅ Main Content Wrapper */}
+      {/* ✅ Main Wrapper */}
       <div className="max-w-6xl mx-auto relative z-10 flex flex-col xl:flex-row items-center gap-10 sm:gap-12">
-        {/* LEFT: Title & Subtitle */}
+        {/* LEFT */}
         <div className="flex-1 text-center xl:text-left px-2 sm:px-0">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 leading-snug text-white">
             {language === "en" ? data.title_en : data.title_hi}
@@ -95,7 +143,7 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
           </p>
         </div>
 
-        {/* RIGHT: Rotating Testimonial */}
+        {/* RIGHT */}
         <div className="flex-1 relative w-full max-w-md sm:max-w-lg mx-auto xl:mx-0">
           <AnimatePresence mode="wait">
             <motion.div
@@ -106,7 +154,7 @@ const TestimonialsSection = ({ language }: TestimonialsSectionProps) => {
               transition={{ duration: 0.6 }}
               className="relative bg-white text-gray-900 rounded-3xl shadow-2xl border border-blue-100 p-6 sm:p-8 md:p-10 w-full mx-auto overflow-hidden"
             >
-              {/* Review content */}
+              {/* Review */}
               <p className="text-gray-700 italic text-sm sm:text-base md:text-lg leading-relaxed mb-4 sm:mb-6 text-center">
                 “{language === "en" ? t.review_en : t.review_hi}”
               </p>

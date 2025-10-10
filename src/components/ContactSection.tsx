@@ -84,18 +84,35 @@ const ContactSection = ({ language }: ContactSectionProps) => {
         title={language === "en" ? "Contact Us" : "संपर्क करें"}
         schema={{
           "@context": "https://schema.org",
-          "@type": "LocalBusiness",
+          "@type": "AutoRepair",
           name: "Aashvi Automotive",
+          image:
+            "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
+          telephone: "+919229768624",
+          email: "aashviautomotive2025@gmail.com",
           address: {
             "@type": "PostalAddress",
             streetAddress:
-              "Rishikesh Complex, Simri Dih Chowk, Rajnagar, Madhubani",
-            addressRegion: "Bihar",
+              "Ground Floor, Rishikesh Complex, Simri Dih Chowk, Near Hatiyagachi",
+            addressLocality: "Rajnagar",
+            addressRegion: "Madhubani",
             postalCode: "847235",
             addressCountry: "IN",
           },
-          telephone: "+91 9229768624",
-          url: "https://aashviautomotive.in",
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 26.3841554,
+            longitude: 86.1427815,
+          },
+          openingHours: ["Mon-Sun 09:00-18:00"],
+          url: "https://aashviautomotive.in/",
+          sameAs: [
+            "https://www.facebook.com/profile.php?id=61580076237855",
+            "https://wa.me/919229768624",
+            "https://instagram.com/aashviautomotive",
+            "https://aashviautomotive.in",
+            "https://youtube.com/@aashviautomotive",
+          ],
         }}
       />
 

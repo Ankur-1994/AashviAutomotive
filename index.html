@@ -59,20 +59,50 @@
       href="https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/hero_1.jpeg"
     />
 
-    <!-- ✅ Lazy-load chat + analytics AFTER interaction -->
-    <!-- <script>
-      window.addEventListener("load", function () {
-        setTimeout(() => {
-          var s1 = document.createElement("script"),
-            s0 = document.getElementsByTagName("script")[0];
-          s1.src = "https://embed.tawk.to/68e405ca2c740119528ea05b/1j6tbd8k1";
-          s1.async = true;
-          s1.charset = "UTF-8";
-          s1.crossOrigin = "anonymous";
-          s0.parentNode.insertBefore(s1, s0);
-        }, 4000);
-      });
-    </script> -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "AutoRepair",
+        "name": "Aashvi Automotive",
+        "image": "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
+        "logo": "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
+        "telephone": "+91 9229768624",
+        "potentialAction": {
+          "@type": "CommunicateAction",
+          "target": "tel:+919229768624",
+          "name": "Call Aashvi Automotive"
+        },
+        "email": "aashviautomotive2025@gmail.com",
+        "url": "https://aashviautomotive.in",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Ground Floor, Rishikesh Complex, Simri Dih Chowk, Near Hatiyagachi Rajnagar, Madhubani",
+          "addressLocality": "Rajnagar",
+          "addressRegion": "Bihar",
+          "postalCode": "847235",
+          "addressCountry": "IN"
+        },
+        "areaServed": [
+          { "@type": "Place", "name": "Rajnagar" },
+          { "@type": "Place", "name": "Madhubani" },
+          { "@type": "Place", "name": "Jhanjharpur" },
+          { "@type": "Place", "name": "Benipatti" }
+        ],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 26.3841554,
+          "longitude": 86.1427815
+        },
+        "openingHours": ["Mo-Su 09:00-18:00"],
+        "sameAs": [
+          "https://www.facebook.com/profile.php?id=61580076237855",
+          "https://wa.me/919229768624",
+          "https://instagram.com/aashviautomotive",
+          "https://aashviautomotive.in",
+          "https://youtube.com/@aashviautomotive"
+        ]
+      }
+    </script>
 
     <!-- ✅ Defer non-critical scripts -->
     <script defer type="module" src="/src/main.tsx"></script>
