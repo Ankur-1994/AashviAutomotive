@@ -208,7 +208,10 @@ const ContactSection = ({ language }: ContactSectionProps) => {
           {/* 🔹 CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center xl:justify-start w-full sm:w-auto">
             <a
-              href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}`}
+              href={`https://wa.me/${contact.whatsapp.replace(
+                /\D/g,
+                ""
+              )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-600 hover:bg-green-700 text-white font-semibold text-sm sm:text-base px-8 py-3 rounded-lg shadow-md transition-all w-full sm:w-auto text-center"

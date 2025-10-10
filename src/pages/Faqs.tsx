@@ -208,7 +208,7 @@ const Faqs: React.FC<FaqsProps> = ({ language }) => {
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
             <a
-              href="https://wa.me/919229768624"
+              href="https://wa.me/919229768624?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 text-center"

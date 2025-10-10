@@ -172,7 +172,10 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
 
           {/* WhatsApp */}
           <a
-            href={`https://wa.me/${navData.whatsapp.replace(/\D/g, "")}`}
+            href={`https://wa.me/${navData.whatsapp.replace(
+              /\D/g,
+              ""
+            )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-all"
@@ -265,7 +268,10 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
                 </button>
 
                 <a
-                  href={`https://wa.me/${navData.whatsapp.replace(/\D/g, "")}`}
+                  href={`https://wa.me/${navData.whatsapp.replace(
+                    /\D/g,
+                    ""
+                  )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}

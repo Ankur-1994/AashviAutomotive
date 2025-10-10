@@ -238,7 +238,7 @@ const Contact = ({ language }: ContactProps) => {
                   href={`https://wa.me/${contactData.whatsapp.replace(
                     /\D/g,
                     ""
-                  )}`}
+                  )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-green-700 transition-colors"
@@ -425,7 +425,10 @@ const Contact = ({ language }: ContactProps) => {
 
       {/* Floating WhatsApp Button */}
       <a
-        href={`https://wa.me/${contactData.whatsapp.replace(/\D/g, "")}`}
+        href={`https://wa.me/${contactData.whatsapp.replace(
+          /\D/g,
+          ""
+        )}?text=Hello%20Aashvi%20Automotive%2C%20I%20want%20to%20book%20a%20bike%20service.`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 
