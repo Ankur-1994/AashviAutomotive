@@ -103,7 +103,7 @@ const Home = ({ language }: HomeProps) => {
             longitude: 86.1427815,
           },
           openingHours: ["Mon-Sun 09:00-18:00"],
-          url: "https://aashviautomotive.web.app/",
+          url: "https://aashviautomotive.in/",
         }}
       />
 

@@ -95,7 +95,7 @@ const ContactSection = ({ language }: ContactSectionProps) => {
             addressCountry: "IN",
           },
           telephone: "+91 9229768624",
-          url: "https://aashviautomotive.web.app/",
+          url: "https://aashviautomotive.in",
         }}
       />
 

@@ -80,7 +80,7 @@ const BrandShowcaseSection = ({ language }: BrandShowcaseProps) => {
           "@context": "https://schema.org",
           "@type": "AutoRepair",
           name: "Aashvi Automotive",
-          image: "https://aashviautomotive.web.app/assets/logo.png",
+          image: "https://aashviautomotive.in/assets/logo.png",
           address: {
             "@type": "PostalAddress",
             streetAddress: "Rajnagar, Madhubani",

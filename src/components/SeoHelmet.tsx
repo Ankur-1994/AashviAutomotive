@@ -36,8 +36,8 @@ const SeoHelmet = ({
   const canonicalUrl =
     canonical ||
     (pageKey
-      ? `https://aashviautomotive.web.app/${pageKey}`
-      : "https://aashviautomotive.web.app/");
+      ? `https://aashviautomotive.in/${pageKey}`
+      : "https://aashviautomotive.in/");
 
   return (
     <Helmet>
@@ -54,6 +54,11 @@ const SeoHelmet = ({
       <meta key="og:image" property="og:image" content={ogImage} />
       <meta key="og:url" property="og:url" content={canonicalUrl} />
       <meta key="og:site_name" property="og:site_name" content={siteTitle} />
+      <meta
+        key="og:locale"
+        property="og:locale"
+        content={language === "hi" ? "hi_IN" : "en_IN"}
+      />
 
       {/* Twitter Meta */}
       <meta

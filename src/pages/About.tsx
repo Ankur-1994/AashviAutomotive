@@ -87,7 +87,7 @@ const About = ({ language }: AboutProps) => {
             "@type": "Organization",
             name: "Service Force",
           },
-          url: "https://aashviautomotive.web.app/about",
+          url: "https://aashviautomotive.in/about",
           logo: "https://cdn.jsdelivr.net/gh/Ankur-1994/AashviAutomotive@main/src/assets/logo.jpeg",
         }}
       />
