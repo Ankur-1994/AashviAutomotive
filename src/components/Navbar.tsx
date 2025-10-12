@@ -185,14 +185,26 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
           </a>
         </div>
 
-        {/* ✅ HAMBURGER (Visible below XL) */}
-        <button
-          className="xl:hidden text-2xl focus:outline-none text-inherit"
-          onClick={() => setMenuOpen(true)}
-          aria-label="Open Menu"
-        >
-          <FaBars />
-        </button>
+        {/* ✅ RIGHT SECTION — Language toggle + Hamburger (for small & medium screens) */}
+        <div className="flex items-center gap-3">
+          {/* 🌐 Language Toggle — visible on sm to lg screens */}
+          <button
+            onClick={() => setLanguage(language === "en" ? "hi" : "en")}
+            className="flex xl:hidden items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-orange-500 text-white hover:bg-orange-600 transition-all"
+          >
+            <HiOutlineGlobeAlt className="w-4 h-4" />
+            {language === "en" ? "हिन्दी" : "EN"}
+          </button>
+
+          {/* 🍔 Hamburger Icon */}
+          <button
+            className="xl:hidden text-2xl focus:outline-none text-inherit"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open Menu"
+          >
+            <FaBars />
+          </button>
+        </div>
       </motion.nav>
 
       {/* ✅ MOBILE / TABLET MENU */}

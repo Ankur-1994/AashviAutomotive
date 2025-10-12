@@ -41,6 +41,9 @@ const Contact = ({ language }: ContactProps) => {
     "idle" | "sending" | "success" | "error"
   >("idle");
 
+  const phoneRegex = /^[6-9]\d{9}$/;
+  const isRepeatedDigits = /^(\d)\1{9}$/;
+
   useEffect(() => {
     let active = true;
 
@@ -83,7 +86,7 @@ const Contact = ({ language }: ContactProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.phone || !form.message) return;
+    if (!form.name || !form.phone) return;
     try {
       setStatus("sending");
       const { getDb } = await import("../services/firebaseLazy");
@@ -302,11 +305,23 @@ const Contact = ({ language }: ContactProps) => {
                   setNameError("");
                 }
 
-                if (!form.phone.trim() || form.phone.length < 10) {
+                if (!form.phone.trim()) {
+                  // Case 1: Empty field
                   setPhoneError(
                     language === "en"
-                      ? "Please enter a valid 10-digit mobile number"
-                      : "कृपया 10 अंकों का मान्य मोबाइल नंबर दर्ज करें"
+                      ? "Please enter your mobile number"
+                      : "कृपया अपना मोबाइल नंबर दर्ज करें"
+                  );
+                  isValid = false;
+                } else if (
+                  !phoneRegex.test(form.phone) ||
+                  isRepeatedDigits.test(form.phone)
+                ) {
+                  // Case 2: Invalid number pattern
+                  setPhoneError(
+                    language === "en"
+                      ? "Please enter a valid Indian mobile number"
+                      : "कृपया एक मान्य भारतीय मोबाइल नंबर दर्ज करें"
                   );
                   isValid = false;
                 } else {

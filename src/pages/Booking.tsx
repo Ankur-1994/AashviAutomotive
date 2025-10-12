@@ -138,34 +138,77 @@ const Booking = ({ language }: BookingProps) => {
     };
   }, []);
 
-  // ----- local (IST-safe) min date string YYYY-MM-DD -----
-  const minDate = useMemo(() => {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`; // local date, avoids UTC off-by-one
-  }, []);
-
-  // ----- validation -----
+  // ------------------ VALIDATION ------------------
   const errors = useMemo(() => {
-    const e: Partial<Record<keyof BookingForm, string>> = {};
-    if (!form.name.trim()) e.name = isEn ? "Name is required" : "नाम आवश्यक है";
-    if (!/^\d{10}$/.test(form.phone))
-      e.phone = isEn ? "Enter 10-digit number" : "10 अंकों का नंबर दर्ज करें";
+    const e: Partial<Record<keyof BookingForm | "customService", string>> = {};
+    const phoneRegex = /^[6-9]\d{9}$/;
+    const isRepeatedDigits = /^(\d)\1{9}$/;
+
+    if (!form.name.trim())
+      e.name = isEn ? "Please enter your name" : "कृपया अपना नाम दर्ज करें";
+
+    if (!form.phone.trim()) {
+      e.phone = isEn
+        ? "Please enter your mobile number"
+        : "कृपया अपना मोबाइल नंबर दर्ज करें";
+    } else if (
+      !phoneRegex.test(form.phone) ||
+      isRepeatedDigits.test(form.phone)
+    ) {
+      e.phone = isEn
+        ? "Please enter a valid Indian mobile number"
+        : "कृपया एक मान्य भारतीय मोबाइल नंबर दर्ज करें";
+    }
+
     if (!form.brand.trim())
       e.brand = isEn ? "Brand is required" : "ब्रांड आवश्यक है";
+
     if (!form.vehicle.trim())
       e.vehicle = isEn ? "Model is required" : "मॉडल आवश्यक है";
+
     if (!form.serviceType)
-      e.serviceType = isEn ? "Select a service" : "सेवा चुनें";
-    if (!form.date) {
-      e.date = isEn ? "Select a date" : "तारीख चुनें";
-    } else if (form.date < minDate) {
-      e.date = isEn ? "Past dates not allowed" : "पिछली तारीख़ चुनना संभव नहीं";
+      e.serviceType = isEn ? "Select a service type" : "सेवा का प्रकार चुनें";
+
+    if (form.serviceType === "Other" && !form.message.trim()) {
+      e.customService = isEn
+        ? "Please describe your issue"
+        : "कृपया अपनी समस्या का वर्णन करें";
     }
+
+    if (!form.date) {
+      e.date = isEn ? "Please select a date" : "कृपया एक तारीख़ चुनें";
+    } else {
+      const selected = new Date(form.date + "T00:00:00");
+      const now = new Date();
+
+      // Normalize both to midnight for pure date comparison
+      const todayMidnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+      const selectedMidnight = new Date(
+        selected.getFullYear(),
+        selected.getMonth(),
+        selected.getDate()
+      );
+
+      const isToday = selectedMidnight.getTime() === todayMidnight.getTime();
+
+      // 🧩 Check only if selected day < today (ignore time)
+      if (selectedMidnight < todayMidnight) {
+        e.date = isEn
+          ? "Past dates are not allowed"
+          : "पिछली तारीख़ चुनना संभव नहीं";
+      } else if (isToday && now.getHours() >= 17) {
+        e.date = isEn
+          ? "Today's booking is closed after 5 PM"
+          : "आज की बुकिंग शाम 5 बजे के बाद बंद है";
+      }
+    }
+
     return e;
-  }, [form, isEn, minDate]);
+  }, [form, isEn]);
 
   // ----- handlers -----
   const handleChange = (
@@ -321,13 +364,41 @@ const Booking = ({ language }: BookingProps) => {
           </h2>
 
           {submitted ? (
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-green-600 text-lg font-medium py-8"
+              className="text-center py-10"
             >
-              {isEn ? content.success_msg_en : content.success_msg_hi}
-            </motion.p>
+              <p className="text-green-600 text-lg font-medium mb-6">
+                {isEn ? content.success_msg_en : content.success_msg_hi}
+              </p>
+              <button
+                onClick={() => {
+                  setSubmitted(false);
+                  setForm({
+                    name: "",
+                    phone: "",
+                    brand: "",
+                    vehicle: "",
+                    serviceType: "",
+                    date: "",
+                    message: "",
+                  });
+                  setTouched({
+                    name: false,
+                    phone: false,
+                    brand: false,
+                    vehicle: false,
+                    serviceType: false,
+                    date: false,
+                    message: false,
+                  });
+                }}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all"
+              >
+                {isEn ? "Book another service" : "एक और सर्विस बुक करें"}
+              </button>
+            </motion.div>
           ) : (
             <form
               onSubmit={handleSubmit}
@@ -505,6 +576,40 @@ const Booking = ({ language }: BookingProps) => {
                     </p>
                   )}
               </div>
+
+              {/* Additional field for 'Other' service */}
+              {form.serviceType === "Other" && (
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {isEn
+                      ? "Describe your issue"
+                      : "कृपया अपनी समस्या का वर्णन करें"}
+                  </label>
+                  <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    onBlur={markTouched}
+                    placeholder={
+                      isEn
+                        ? "Describe your vehicle issue or service need"
+                        : "अपनी गाड़ी की समस्या या सर्विस आवश्यकता बताएं"
+                    }
+                    className={`border rounded-lg px-4 py-3 w-full h-28 focus:ring-2 focus:ring-orange-500 outline-none transition ${
+                      (touched.message || submitAttempted) &&
+                      errors.customService
+                        ? "border-red-400"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {(touched.message || submitAttempted) &&
+                    errors.customService && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.customService}
+                      </p>
+                    )}
+                </div>
+              )}
 
               {/* Preferred Date */}
               <motion.div
