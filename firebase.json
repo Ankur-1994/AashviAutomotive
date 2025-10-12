@@ -36,16 +36,6 @@
           ]
         }
       ]
-    },
-    {
-      "target": "root-redirect",
-      "redirects": [
-        {
-          "source": "/**",
-          "destination": "https://www.aashviautomotive.in",
-          "type": 301
-        }
-      ]
     }
   ]
 }

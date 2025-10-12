@@ -11,7 +11,6 @@ import {
   FaGavel,
   FaShieldAlt,
   FaUndoAlt,
-  FaSitemap,
 } from "react-icons/fa";
 
 interface FooterProps {
@@ -166,17 +165,6 @@ const Footer = ({ language }: FooterProps) => {
               <Link to="/refunds" className="hover:text-orange-400">
                 {isEn ? "Refund & Cancellation" : "रिफंड और रद्दीकरण नीति"}
               </Link>
-            </li>
-            <li className="flex items-center gap-2">
-              <FaSitemap className="text-orange-400" />
-              <a
-                href="/sitemap.xml"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-orange-400"
-              >
-                {isEn ? "Sitemap" : "साइटमैप"}
-              </a>
             </li>
           </ul>
         </div>
