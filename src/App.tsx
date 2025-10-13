@@ -7,6 +7,7 @@ import {
 import { useState, useEffect, Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import NotFound from "./pages/NotFound";
 
 // ✅ Lazy-load all route pages
 const Home = lazy(() => import("./pages/Home"));
@@ -17,6 +18,7 @@ const ReferAndEarn = lazy(() => import("./pages/ReferAndEarn"));
 const Services = lazy(() => import("./pages/Services"));
 const Faqs = lazy(() => import("./pages/Faqs"));
 const PolicyPage = lazy(() => import("./pages/PolicyPage"));
+const KnowYourBike = lazy(() => import("./pages/KnowYourBike"));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -68,6 +70,13 @@ function App() {
               path="/refunds"
               element={<PolicyPage language={language} />}
             />
+
+            <Route
+              path="/know-your-bike"
+              element={<KnowYourBike language={language} />}
+            />
+
+            <Route path="*" element={<NotFound language={language} />} />
           </Routes>
         </Suspense>
       </main>

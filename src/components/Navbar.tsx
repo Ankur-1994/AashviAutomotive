@@ -68,7 +68,7 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
 
   if (!navData) return null;
 
-  const isLightPage = [
+  const lightRoutes = [
     "/booking",
     "/contact",
     "/refer",
@@ -77,7 +77,14 @@ const Navbar = ({ language, setLanguage }: NavbarProps) => {
     "/terms",
     "/privacy",
     "/refunds",
-  ].includes(location.pathname);
+    "/know-your-bike",
+  ];
+
+  // ✅ define all known routes in your app
+  const knownRoutes = ["/", "/about", ...lightRoutes];
+
+  const isNotFoundPage = !knownRoutes.includes(location.pathname);
+  const isLightPage = lightRoutes.includes(location.pathname) || isNotFoundPage;
 
   const navClasses =
     isScrolled || isLightPage

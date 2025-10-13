@@ -1,8 +1,17 @@
 /// <reference types="vite/client" />
+
+// ✅ Explicitly reference React Three Fiber’s type declarations
+/// <reference path="../node_modules/@react-three/fiber/dist/declarations/src/index.d.ts" />
+/// <reference path="../node_modules/@react-three/fiber/dist/declarations/src/three-types.d.ts" />
+
+// ✅ Declare optional modules used in your project
 declare module "@vitejs/plugin-react-swc";
 declare module "rollup-plugin-visualizer";
 declare module "vite-plugin-compression";
+declare module "@react-three/fiber";
+declare module "@react-three/drei";
 
+// ✅ Environment variable typings
 interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY: string;
   readonly VITE_FIREBASE_AUTH_DOMAIN: string;
