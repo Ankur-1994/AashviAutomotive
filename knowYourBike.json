@@ -1,0 +1,265 @@
+{
+    "metadata": {
+      "en": {
+        "title": "Know Your Bike",
+        "subtitle": "Drag to rotate • Pinch/scroll to zoom • Tap orange dots to explore parts",
+        "description": "Explore your bike in 3D with Aashvi Automotive. Learn about maintenance, service intervals, lifespan, and safety tips for every essential part of your motorcycle.",
+        "tip": "Tip: Tap each orange hotspot to explore how to care for and maintain that part of your bike."
+      },
+      "hi": {
+        "title": "अपनी बाइक को जानें",
+        "subtitle": "रोटेट करने के लिए ड्रैग करें • ज़ूम करने के लिए पिंच करें • हिस्सों को जानने के लिए ऑरेंज डॉट पर टैप करें",
+        "description": "Aashvi Automotive के साथ अपनी बाइक को 3D में जानें। मेंटेनेंस, सर्विस इंटरवल, आयु और सुरक्षा सुझाव हर महत्वपूर्ण हिस्से के लिए देखें।",
+        "tip": "टिप: हर ऑरेंज डॉट को टैप करें ताकि आप बाइक के उस हिस्से की जानकारी और देखभाल के टिप्स जान सकें।"
+      },
+      "seo": {
+        "keywords": [
+          "bike service",
+          "motorcycle maintenance",
+          "Aashvi Automotive",
+          "3D bike model",
+          "Know Your Bike"
+        ],
+        "structuredData": {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Know Your Bike - Aashvi Automotive",
+          "description": "Interactive 3D bike model by Aashvi Automotive. Learn about tyres, engine, chain, brakes, and battery with detailed maintenance tips.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Aashvi Automotive",
+            "url": "https://aashviautomotive.in"
+          }
+        }
+      }
+    },
+    "model": {
+      "modelUrl": "bike.glb",
+      "scale": 1.3,
+      "rotationSpeed": 0.4,
+      "cameraOffsetY": 1.2,
+      "lighting": {
+        "ambientIntensity": 0.55,
+        "directionalIntensity": 1.25,
+        "hemisphereIntensity": 0.65
+      },
+      "environment": "warehouse",
+      "backgroundColor": "#f7f9fc"
+    },
+    "hotspots": [
+      {
+        "id": "engine",
+        "position": [0.1, 0.3, 0.2],
+        "icon": "⚙️",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Fengine.jpg?alt=media",
+        "en": {
+          "title": "Engine",
+          "shortDesc": "Heart of your motorcycle — converts fuel into motion.",
+          "maintenance": {
+            "interval": "Every 2500 km",
+            "recommendedOil": "10W-30 or equivalent",
+            "signsOfIssue": [
+              "Hard starting or knocking sounds",
+              "Oil leakage or smoke from exhaust",
+              "Reduced pickup or mileage"
+            ]
+          },
+          "lifespan": "60,000 – 80,000 km with regular servicing",
+          "tips": [
+            "Change oil regularly and use manufacturer-recommended grade.",
+            "Avoid revving hard when the bike is cold.",
+            "Always clean the air filter during oil change."
+          ]
+        },
+        "hi": {
+          "title": "इंजन",
+          "shortDesc": "आपकी बाइक का दिल — ईंधन को गति में बदलता है।",
+          "maintenance": {
+            "interval": "हर 2500 किमी",
+            "recommendedOil": "10W-30 या समकक्ष",
+            "signsOfIssue": [
+              "स्टार्ट में कठिनाई या नॉकिंग की आवाज़",
+              "तेल का रिसाव या साइलेंसर से धुआं",
+              "पिकअप या माइलेज में कमी"
+            ]
+          },
+          "lifespan": "60,000 – 80,000 किमी (नियमित सर्विस के साथ)",
+          "tips": [
+            "तेल नियमित रूप से बदलें और कंपनी द्वारा सुझाए गए ग्रेड का उपयोग करें।",
+            "ठंडी बाइक को ज़्यादा रेव न करें।",
+            "तेल बदलते समय एयर फ़िल्टर को साफ़ करें।"
+          ]
+        }
+      },
+      {
+        "id": "front-tyre",
+        "position": [0.8, -0.25, 0.4],
+        "icon": "🛞",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Ffront-tyre.jpg?alt=media",
+        "en": {
+          "title": "Front Tyre",
+          "shortDesc": "Ensures stability and road grip.",
+          "maintenance": {
+            "interval": "Pressure check weekly",
+            "recommendedPressure": "28–30 psi"
+          },
+          "lifespan": "20,000 – 25,000 km",
+          "tips": [
+            "Check tyre pressure weekly.",
+            "Replace when tread depth is below 1mm.",
+            "Avoid overloading and sharp braking."
+          ]
+        },
+        "hi": {
+          "title": "सामने का टायर",
+          "shortDesc": "सड़क पर पकड़ और स्थिरता सुनिश्चित करता है।",
+          "maintenance": {
+            "interval": "हर सप्ताह जांचें",
+            "recommendedPressure": "28–30 psi"
+          },
+          "lifespan": "20,000 – 25,000 किमी",
+          "tips": [
+            "हर सप्ताह टायर का प्रेशर जांचें।",
+            "ट्रेड डेप्थ 1mm से कम होने पर बदलें।",
+            "ओवरलोडिंग और तेज़ ब्रेकिंग से बचें।"
+          ]
+        }
+      },
+      {
+        "id": "rear-tyre",
+        "position": [-0.8, -0.25, -0.6],
+        "icon": "🛞",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Frear-tyre.jpg?alt=media",
+        "en": {
+          "title": "Rear Tyre",
+          "shortDesc": "Handles power and rear stability.",
+          "maintenance": {
+            "interval": "Pressure check weekly",
+            "recommendedPressure": "30–32 psi"
+          },
+          "lifespan": "22,000 – 26,000 km",
+          "tips": [
+            "Keep correct pressure for better mileage.",
+            "Avoid sudden acceleration to prevent wear.",
+            "Check wheel alignment every 5,000 km."
+          ]
+        },
+        "hi": {
+          "title": "पीछे का टायर",
+          "shortDesc": "पावर और पीछे की स्थिरता को संभालता है।",
+          "maintenance": {
+            "interval": "हर सप्ताह जांचें",
+            "recommendedPressure": "30–32 psi"
+          },
+          "lifespan": "22,000 – 26,000 किमी",
+          "tips": [
+            "सही प्रेशर रखने से माइलेज बेहतर होता है।",
+            "अचानक एक्सेलेरेशन से बचें।",
+            "हर 5,000 किमी पर व्हील एलाइनमेंट जांचें।"
+          ]
+        }
+      },
+      {
+        "id": "chain",
+        "position": [-0.3, -0.1, -0.5],
+        "icon": "⛓️",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Fchain.jpg?alt=media",
+        "en": {
+          "title": "Drive Chain",
+          "shortDesc": "Transfers engine power to rear wheel.",
+          "maintenance": {
+            "interval": "Lubricate every 500 km",
+            "recommendedLubricant": "SAE 80W-90 Chain Lube"
+          },
+          "lifespan": "25,000 – 30,000 km",
+          "tips": [
+            "Clean and lubricate chain regularly.",
+            "Avoid excessive tension — maintain slack around 20mm.",
+            "Use O-ring compatible chain spray."
+          ]
+        },
+        "hi": {
+          "title": "ड्राइव चेन",
+          "shortDesc": "इंजन की शक्ति को पिछले पहिए तक पहुंचाता है।",
+          "maintenance": {
+            "interval": "हर 500 किमी पर ग्रीस करें",
+            "recommendedLubricant": "SAE 80W-90 चेन लुब्रिकेंट"
+          },
+          "lifespan": "25,000 – 30,000 किमी",
+          "tips": [
+            "चेन को नियमित रूप से साफ़ और ग्रीस करें।",
+            "बहुत अधिक टेंशन न रखें — 20mm ढील बनाए रखें।",
+            "O-ring संगत चेन स्प्रे का उपयोग करें।"
+          ]
+        }
+      },
+      {
+        "id": "battery",
+        "position": [0.2, 0.2, -0.3],
+        "icon": "🔋",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Fbattery.jpg?alt=media",
+        "en": {
+          "title": "Battery",
+          "shortDesc": "Provides power to electrical systems.",
+          "maintenance": {
+            "interval": "Check terminals monthly",
+            "recommendedType": "12V Maintenance-Free Battery"
+          },
+          "lifespan": "2–3 years",
+          "tips": [
+            "Keep terminals clean and rust-free.",
+            "Check voltage during service visits.",
+            "Disconnect battery when not in use for long periods."
+          ]
+        },
+        "hi": {
+          "title": "बैटरी",
+          "shortDesc": "इलेक्ट्रिकल सिस्टम को ऊर्जा प्रदान करती है।",
+          "maintenance": {
+            "interval": "हर महीने टर्मिनल जांचें",
+            "recommendedType": "12V मेंटेनेंस-फ्री बैटरी"
+          },
+          "lifespan": "2–3 वर्ष",
+          "tips": [
+            "टर्मिनल को साफ़ और जंग-रहित रखें।",
+            "सर्विस के दौरान वोल्टेज जांचें।",
+            "लंबे समय तक बाइक न चलाने पर बैटरी डिस्कनेक्ट करें।"
+          ]
+        }
+      },
+      {
+        "id": "brakes",
+        "position": [0.5, 0.0, 0.6],
+        "icon": "🛑",
+        "image": "https://firebasestorage.googleapis.com/v0/b/aashvi-automotive.appspot.com/o/parts%2Fbrakes.jpg?alt=media",
+        "en": {
+          "title": "Brakes",
+          "shortDesc": "Ensures safe stopping and control.",
+          "maintenance": {
+            "interval": "Inspect pads every 3000 km",
+            "fluidType": "DOT 3 / DOT 4 Brake Fluid"
+          },
+          "lifespan": "15,000 – 20,000 km (pads)",
+          "tips": [
+            "Replace worn-out pads immediately.",
+            "Bleed brakes every 10,000 km.",
+            "Use only manufacturer-approved brake fluid."
+          ]
+        },
+        "hi": {
+          "title": "ब्रेक",
+          "shortDesc": "सुरक्षित रुकने और नियंत्रण के लिए महत्वपूर्ण।",
+          "maintenance": {
+            "interval": "हर 3000 किमी पर पैड की जांच करें",
+            "fluidType": "DOT 3 / DOT 4 ब्रेक फ्लूइड"
+          },
+          "lifespan": "15,000 – 20,000 किमी (पैड)",
+          "tips": [
+            "घिसे हुए पैड को तुरंत बदलें।",
+            "हर 10,000 किमी पर ब्रेक ब्लीड करें।",
+            "केवल कंपनी द्वारा सुझाए गए ब्रेक फ्लूइड का उपयोग करें।"
+          ]
+        }
+      }
+    ]
+  }  
